@@ -37,6 +37,8 @@ elseif(IS_GNU OR IS_CLANG)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall")
 endif()
 
+set(LIBRARY_NAME pnpsolver)
+
 include_directories(${PROJECT_SOURCE_DIR}/src)
 
 aux_source_directory(base base_src)
@@ -49,7 +51,7 @@ aux_source_directory(optim optim_src)
 
 aux_source_directory(util util_src)
 
-add_library(pnpsolver SHARED
+add_library(${LIBRARY_NAME} SHARED
         ${base_src}
         ${interface_src}
         ${estimators_src}
@@ -57,3 +59,7 @@ add_library(pnpsolver SHARED
         ${util_src})
 set_target_properties(pnpsolver PROPERTIES POSITION_INDEPENDENT_CODE ON)
 target_link_libraries(pnpsolver ${Boost_LIBRARIES} ${CERES_LIBRARIES})
+
+
+install(TARGETS ${LIBRARY_NAME} LIBRARY  DESTINATION lib)
+install(FILES ${PROJECT_SOURCE_DIR}/src/interface/pnp_solver.h DESTINATION include)

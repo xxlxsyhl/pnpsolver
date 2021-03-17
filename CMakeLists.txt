@@ -30,7 +30,7 @@
 # Author: Johannes L. Schoenberger (jsch-at-demuc-dot-de)
 
 cmake_minimum_required(VERSION 3.0)
-project(pnpsolver)
+project(pnpsolver VERSION 1.0.0)
 
 ################################################################################
 # Include CMake dependencies
