@@ -6,8 +6,6 @@ Simplified [COLMAP](https://github.com/colmap/colmap) PnP Solver with weight PnP
 ____
 We have simplified COLMAP project and keeping only the PnP Solver parts. Then enhence the project with weighted PnP Solver. 
 
-Authors: [Hailin Yu](yuhailin@sensetime.com)
-
 ## Dependencies
 ____
 - C++11
@@ -19,7 +17,6 @@ ____
 
 ## Install
 ____
-Generate 
 ```
 mkdir build && cd build
 cmake .. && make -j4
