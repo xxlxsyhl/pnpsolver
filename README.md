@@ -29,6 +29,7 @@ sudo make install
 ## Acknowledgements
 ____
 The Backbone of PnP Solver is based on [COLMAP](https://github.com/colmap/colmap)
+
     @inproceedings{schoenberger2016sfm,
         author={Sch\"{o}nberger, Johannes Lutz and Frahm, Jan-Michael},
         title={Structure-from-Motion Revisited},
