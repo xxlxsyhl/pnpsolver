@@ -31,10 +31,11 @@ int main(int argc, char** argv) {
         Eigen::Vector3d tvec;
         std::vector<char> mask;
 
+        size_t num_inliers = 0;
         if (sovle_pnp_ransac(points2D, points3D, model_name, params, qvec, tvec,
-                8.0, 0.1, 0.9999, 1000, &mask,
+                 num_inliers, 8.0, 0.1, 0.9999, 1000, &mask,
                 colpnp::LORANSAC, colpnp::WEIGHT_SAMPLE, &priors) ){
-            std::cout << "Inlier: " << std::count(mask.begin(), mask.end(), 1) << std::endl;
+            std::cout << "Inlier: " << num_inliers << std::endl;
         } else {
             std::cout << "Failed" << std::endl;
         }
