@@ -12,6 +12,7 @@ bool sovle_pnp_ransac(const std::vector<Eigen::Vector2d> &points2D,
                       const std::vector<double> &params,
                       Eigen::Vector4d &qvec,
                       Eigen::Vector3d &tvec,
+                      size_t &num_inlier,
                       double error_thres,
                       double inlier_ratio,
                       double confidence,
@@ -36,7 +37,7 @@ bool sovle_pnp_ransac(const std::vector<Eigen::Vector2d> &points2D,
     camera.SetModelIdFromName(camera_model);
     camera.SetParams(params);
 
-    size_t num_inlier = 0;
+    num_inlier = 0;
 
     colmap::RansacSampler abs_pose_sampler;
     if (sampler == RANDOM_SAMPLE) {

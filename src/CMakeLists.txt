@@ -57,8 +57,8 @@ add_library(${LIBRARY_NAME} SHARED
         ${estimators_src}
         ${optim_src}
         ${util_src})
-set_target_properties(pnpsolver PROPERTIES POSITION_INDEPENDENT_CODE ON)
-target_link_libraries(pnpsolver ${Boost_LIBRARIES} ${CERES_LIBRARIES})
+set_target_properties(${LIBRARY_NAME} PROPERTIES POSITION_INDEPENDENT_CODE ON)
+target_link_libraries(${LIBRARY_NAME} ${Boost_LIBRARIES} ${CERES_LIBRARIES})
 
 
 install(TARGETS ${LIBRARY_NAME} LIBRARY  DESTINATION lib)
