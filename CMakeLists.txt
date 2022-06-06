@@ -32,6 +32,10 @@
 cmake_minimum_required(VERSION 3.0)
 project(pnpsolver VERSION 1.0.0)
 
+add_compile_options(-std=c++11)
+add_compile_options(-fPIC)
+add_compile_options(-O3)
+
 ################################################################################
 # Include CMake dependencies
 ################################################################################
@@ -47,16 +51,25 @@ option(OPENMP_ENABLED "Whether to enable OpenMP parallelization" ON)
 # Find packages
 ################################################################################
 find_package(Ceres REQUIRED)
+if(Ceres_FOUND)
+    include_directories(${Ceres_INCLUDE_DIRS})
+    message( STATUS "Ceres_INCLUDE_DIRS = ${CERES_INCLUDE_DIRS}")
+    message( STATUS "Ceres_LIBRARIES = ${Ceres_LIBRARIES}")
+    message( STATUS "Ceres_LIB_VERSION = ${Ceres_LIB_VERSION}")
+endif()
 
 find_package(Boost REQUIRED COMPONENTS
         program_options
         filesystem
         graph
-        regex
         system
         unit_test_framework)
 
 find_package(Eigen3 REQUIRED)
+if(EIGEN3_FOUND)
+    include_directories(${EIGEN3_INCLUDE_DIRS})
+    message( STATUS "EIGEN3_INCLUDE_DIRS = ${EIGEN3_INCLUDE_DIRS}")
+endif()
 
 find_package(Glog REQUIRED)
 
