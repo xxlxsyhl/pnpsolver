@@ -35,7 +35,6 @@
 
 #include "base/camera_models.h"
 #include "util/logging.h"
-#include "util/misc.h"
 
 namespace colmap {
 
@@ -165,18 +164,6 @@ void Camera::SetPrincipalPointY(const double ppy) {
   const std::vector<size_t>& idxs = PrincipalPointIdxs();
   CHECK_EQ(idxs.size(), 2);
   params_[idxs[1]] = ppy;
-}
-
-std::string Camera::ParamsToString() const { return VectorToCSV(params_); }
-
-bool Camera::SetParamsFromString(const std::string& string) {
-  const std::vector<double> new_camera_params = CSVToVector<double>(string);
-  if (!CameraModelVerifyParams(model_id_, new_camera_params)) {
-    return false;
-  }
-
-  params_ = new_camera_params;
-  return true;
 }
 
 bool Camera::VerifyParams() const {

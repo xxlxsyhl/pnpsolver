@@ -58,13 +58,6 @@ if(Ceres_FOUND)
     message( STATUS "Ceres_LIB_VERSION = ${Ceres_LIB_VERSION}")
 endif()
 
-find_package(Boost REQUIRED COMPONENTS
-        program_options
-        filesystem
-        graph
-        system
-        unit_test_framework)
-
 find_package(Eigen3 REQUIRED)
 if(EIGEN3_FOUND)
     include_directories(${EIGEN3_INCLUDE_DIRS})

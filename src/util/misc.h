@@ -36,10 +36,8 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <algorithm>
 
-#include <boost/filesystem.hpp>
-
-#include "util/endian.h"
 #include "util/logging.h"
 #include "util/string.h"
 
@@ -115,10 +113,6 @@ bool VectorContainsValue(const std::vector<T>& vector, const T value);
 template <typename T>
 bool VectorContainsDuplicateValues(const std::vector<T>& vector);
 
-// Parse CSV line to a list of values.
-template <typename T>
-std::vector<T> CSVToVector(const std::string& csv);
-
 // Concatenate values in list to comma-separated list.
 template <typename T>
 std::string VectorToCSV(const std::vector<T>& values);
@@ -142,14 +136,6 @@ void RemoveCommandLineArgument(const std::string& arg, int* argc, char** argv);
 // Implementation
 ////////////////////////////////////////////////////////////////////////////////
 
-template <typename... T>
-std::string JoinPaths(T const&... paths) {
-  boost::filesystem::path result;
-  int unpack[]{0, (result = result / boost::filesystem::path(paths), 0)...};
-  static_cast<void>(unpack);
-  return result.string();
-}
-
 template <typename T>
 bool VectorContainsValue(const std::vector<T>& vector, const T value) {
   return std::find_if(vector.begin(), vector.end(), [value](const T element) {
@@ -171,25 +157,6 @@ std::string VectorToCSV(const std::vector<T>& values) {
     string += std::to_string(value) + ", ";
   }
   return string.substr(0, string.length() - 2);
-}
-
-template <typename T>
-void ReadBinaryBlob(const std::string& path, std::vector<T>* data) {
-  std::ifstream file(path, std::ios::binary | std::ios::ate);
-  CHECK(file.is_open()) << path;
-  file.seekg(0, std::ios::end);
-  const size_t num_bytes = file.tellg();
-  CHECK_EQ(num_bytes % sizeof(T), 0);
-  data->resize(num_bytes / sizeof(T));
-  file.seekg(0, std::ios::beg);
-  ReadBinaryLittleEndian<T>(&file, data);
-}
-
-template <typename T>
-void WriteBinaryBlob(const std::string& path, const std::vector<T>& data) {
-  std::ofstream file(path, std::ios::binary);
-  CHECK(file.is_open()) << path;
-  WriteBinaryLittleEndian<T>(&file, data);
 }
 
 }  // namespace colmap

@@ -104,9 +104,6 @@ class Camera {
   inline double* ParamsData();
   inline void SetParams(const std::vector<double>& params);
 
-  // Concatenate parameters as comma-separated list.
-  std::string ParamsToString() const;
-
   // Set camera parameters from comma-separated list.
   bool SetParamsFromString(const std::string& string);
 

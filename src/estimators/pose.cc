@@ -39,7 +39,6 @@
 #include "optim/weighted_sampler.h"
 #include "optim/progressive_sampler.h"
 #include "util/matrix.h"
-#include "util/misc.h"
 #include "util/threading.h"
 
 namespace colmap {
@@ -425,7 +424,7 @@ bool RefineAbsolutePose(const AbsolutePoseRefinementOptions& options,
   }
 
   if (options.print_summary) {
-    PrintHeading2("Pose refinement report");
+    std::cout << "Pose refinement report" << std::endl;
     PrintSolverSummary(summary);
   }
 

@@ -32,7 +32,6 @@
 #include "util/timer.h"
 
 #include "util/logging.h"
-#include "util/misc.h"
 
 using namespace std::chrono;
 
@@ -84,20 +83,5 @@ double Timer::ElapsedSeconds() const { return ElapsedMicroSeconds() / 1e6; }
 double Timer::ElapsedMinutes() const { return ElapsedSeconds() / 60; }
 
 double Timer::ElapsedHours() const { return ElapsedMinutes() / 60; }
-
-void Timer::PrintSeconds() const {
-  std::cout << StringPrintf("Elapsed time: %.5f [seconds]", ElapsedSeconds())
-            << std::endl;
-}
-
-void Timer::PrintMinutes() const {
-  std::cout << StringPrintf("Elapsed time: %.3f [minutes]", ElapsedMinutes())
-            << std::endl;
-}
-
-void Timer::PrintHours() const {
-  std::cout << StringPrintf("Elapsed time: %.3f [hours]", ElapsedHours())
-            << std::endl;
-}
 
 }  // namespace colmap

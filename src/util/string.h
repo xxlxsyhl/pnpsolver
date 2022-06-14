@@ -37,11 +37,6 @@
 
 namespace colmap {
 
-// Format string by replacing embedded format specifiers with their respective
-// values, see `printf` for more details. This is a modified implementation
-// of Google's BSD-licensed StringPrintf function.
-std::string StringPrintf(const char* format, ...);
-
 // Replace all occurrences of `old_str` with `new_str` in the given string.
 std::string StringReplace(const std::string& str, const std::string& old_str,
                           const std::string& new_str);

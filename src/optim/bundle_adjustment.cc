@@ -68,7 +68,7 @@ ceres::LossFunction* BundleAdjustmentOptions::CreateLossFunction() const {
 }
 
 bool BundleAdjustmentOptions::Check() const {
-  CHECK_OPTION_GE(loss_function_scale, 0);
+  CHECK(loss_function_scale > 0);
   return true;
 }
 

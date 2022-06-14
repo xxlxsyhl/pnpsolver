@@ -51,10 +51,6 @@ class Timer {
   double ElapsedMinutes() const;
   double ElapsedHours() const;
 
-  void PrintSeconds() const;
-  void PrintMinutes() const;
-  void PrintHours() const;
-
  private:
   bool started_;
   bool paused_;
