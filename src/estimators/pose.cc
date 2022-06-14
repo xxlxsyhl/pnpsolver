@@ -245,9 +245,6 @@ bool EstimateAbsolutePose(const AbsolutePoseEstimationOptions& options,
                             EstimateAbsolutePoseLORANSACKernel, *camera, focal_length_factors[i], points2D,
                             points3D, options.ransac_options, &reports[i]);
                 }
-                else {
-                    CHECK(false) << "Please set true robustor";
-                }
                 break;
             case WEIGHT_SAMPLE:
                 if (robustor == ROBUSTRER_RANSAC) {
@@ -260,12 +257,8 @@ bool EstimateAbsolutePose(const AbsolutePoseEstimationOptions& options,
                             EstimateAbsolutePoseWeightedLORANSACKernel, *camera, focal_length_factors[i], points2D,
                             points3D, priors,  options.ransac_options, &reports[i]);
                 }
-                else {
-                    CHECK(false) << "Please set true robustor";
-                }
                 break;
             default:
-                CHECK(false) << "Please set true sampler";
                 break;
       }
   }
@@ -318,8 +311,8 @@ bool RefineAbsolutePose(const AbsolutePoseRefinementOptions& options,
                         const std::vector<Eigen::Vector3d>& points3D,
                         Eigen::Vector4d* qvec, Eigen::Vector3d* tvec,
                         Camera* camera) {
-  CHECK_EQ(inlier_mask.size(), points2D.size());
-  CHECK_EQ(points2D.size(), points3D.size());
+  // CHECK_EQ(inlier_mask.size(), points2D.size());
+  // CHECK_EQ(points2D.size(), points3D.size());
   options.Check();
 
   ceres::LossFunction* loss_function =

@@ -88,7 +88,7 @@ void ComputeSquaredSampsonError(const std::vector<Eigen::Vector2d>& points1,
                                 const std::vector<Eigen::Vector2d>& points2,
                                 const Eigen::Matrix3d& E,
                                 std::vector<double>* residuals) {
-  CHECK_EQ(points1.size(), points2.size());
+  // CHECK_EQ(points1.size(), points2.size());
 
   residuals->resize(points1.size());
 
@@ -134,7 +134,7 @@ void ComputeSquaredReprojectionError(
     const std::vector<Eigen::Vector2d>& points2D,
     const std::vector<Eigen::Vector3d>& points3D,
     const Eigen::Matrix3x4d& proj_matrix, std::vector<double>* residuals) {
-  CHECK_EQ(points2D.size(), points3D.size());
+  // CHECK_EQ(points2D.size(), points3D.size());
 
   residuals->resize(points2D.size());
 

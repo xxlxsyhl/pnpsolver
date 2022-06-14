@@ -46,8 +46,8 @@ Eigen::Vector3d LiftImagePoint(const Eigen::Vector2d& point) {
 
 std::vector<P3PEstimator::M_t> P3PEstimator::Estimate(
     const std::vector<X_t>& points2D, const std::vector<Y_t>& points3D) {
-  CHECK_EQ(points2D.size(), 3);
-  CHECK_EQ(points3D.size(), 3);
+  // CHECK_EQ(points2D.size(), 3);
+  // CHECK_EQ(points3D.size(), 3);
 
   Eigen::Matrix3d points3D_world;
   points3D_world.col(0) = points3D[0];
@@ -182,8 +182,8 @@ void P3PEstimator::Residuals(const std::vector<X_t>& points2D,
 
 std::vector<EPNPEstimator::M_t> EPNPEstimator::Estimate(
     const std::vector<X_t>& points2D, const std::vector<Y_t>& points3D) {
-  CHECK_GE(points2D.size(), 4);
-  CHECK_EQ(points2D.size(), points3D.size());
+  // CHECK_GE(points2D.size(), 4);
+  // CHECK_EQ(points2D.size(), points3D.size());
 
   EPNPEstimator epnp;
   M_t proj_matrix;

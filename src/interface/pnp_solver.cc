@@ -21,7 +21,7 @@ bool sovle_pnp_ransac(const std::vector<Eigen::Vector2d> &points2D,
                       Robustor robustor,
                       Sampler sampler,
                       std::vector<double>* priors) {
-    CHECK(points2D.size() == points3D.size());
+    // CHECK(points2D.size() == points3D.size());
     if (points2D.size() < 4) {
         return false;
     }
@@ -42,11 +42,11 @@ bool sovle_pnp_ransac(const std::vector<Eigen::Vector2d> &points2D,
     colmap::RansacSampler abs_pose_sampler;
     if (sampler == RANDOM_SAMPLE) {
         abs_pose_sampler = colmap::RANDOM_SAMPLE;
-        CHECK(priors == nullptr);
+        // CHECK(priors == nullptr);
     }
     else if (sampler == WEIGHT_SAMPLE) {
         abs_pose_sampler = colmap::WEIGHT_SAMPLE;
-        CHECK(priors->size() == points3D.size());
+        // CHECK(priors->size() == points3D.size());
     }
 
     colmap::RansacRobustor abs_pose_robustor;

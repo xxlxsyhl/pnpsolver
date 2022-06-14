@@ -95,7 +95,7 @@ struct BundleAdjustmentOptions {
   // takes ownership of the loss function.
   ceres::LossFunction* CreateLossFunction() const;
 
-  bool Check() const;
+  // bool Check() const;
 };
 
 // Configuration container to setup bundle adjustment problems.

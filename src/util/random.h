@@ -125,7 +125,7 @@ T RandomGaussian(const T mean, const T stddev) {
 
 template <typename T>
 void Shuffle(const uint32_t num_to_shuffle, std::vector<T>* elems) {
-  CHECK_LE(num_to_shuffle, elems->size());
+  // CHECK_LE(num_to_shuffle, elems->size());
   const uint32_t last_idx = static_cast<uint32_t>(elems->size() - 1);
   for (uint32_t i = 0; i < num_to_shuffle; ++i) {
     const auto j = RandomInteger<uint32_t>(i, last_idx);
@@ -135,7 +135,7 @@ void Shuffle(const uint32_t num_to_shuffle, std::vector<T>* elems) {
 
 template <typename T>
 std::vector<size_t> WeightedRandomSample(const std::vector<T> &prob, size_t size) {
-    CHECK_LE(size, prob.size());
+    // CHECK_LE(size, prob.size());
     std::discrete_distribution<int> distribution(prob.begin(), prob.end());
 
     if (PRNG == nullptr) {

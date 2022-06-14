@@ -49,7 +49,7 @@ Thread::Thread()
 
 void Thread::Start() {
   std::unique_lock<std::mutex> lock(mutex_);
-  CHECK(!started_ || finished_);
+  // CHECK(!started_ || finished_);
   Wait();
   timer_.Restart();
   thread_ = std::thread(&Thread::RunFunc, this);
@@ -115,8 +115,8 @@ bool Thread::IsFinished() {
 }
 
 void Thread::AddCallback(const int id, const std::function<void()>& func) {
-  CHECK(func);
-  CHECK_GT(callbacks_.count(id), 0) << "Callback not registered";
+  // CHECK(func);
+  // CHECK_GT(callbacks_.count(id), 0) << "Callback not registered";
   callbacks_.at(id).push_back(func);
 }
 
@@ -125,7 +125,7 @@ void Thread::RegisterCallback(const int id) {
 }
 
 void Thread::Callback(const int id) const {
-  CHECK_GT(callbacks_.count(id), 0) << "Callback not registered";
+  // CHECK_GT(callbacks_.count(id), 0) << "Callback not registered";
   for (const auto& callback : callbacks_.at(id)) {
     callback();
   }
@@ -137,7 +137,7 @@ std::thread::id Thread::GetThreadId() const {
 
 void Thread::SignalValidSetup() {
   std::unique_lock<std::mutex> lock(mutex_);
-  CHECK(!setup_);
+  // CHECK(!setup_);
   setup_ = true;
   setup_valid_ = true;
   setup_condition_.notify_all();
@@ -145,7 +145,7 @@ void Thread::SignalValidSetup() {
 
 void Thread::SignalInvalidSetup() {
   std::unique_lock<std::mutex> lock(mutex_);
-  CHECK(!setup_);
+  // CHECK(!setup_);
   setup_ = true;
   setup_valid_ = false;
   setup_condition_.notify_all();

@@ -66,12 +66,12 @@ struct RANSACOptions {
   size_t max_num_trials = std::numeric_limits<size_t>::max();
 
   void Check() const {
-    CHECK_GT(max_error, 0);
-    CHECK_GE(min_inlier_ratio, 0);
-    CHECK_LE(min_inlier_ratio, 1);
-    CHECK_GE(confidence, 0);
-    CHECK_LE(confidence, 1);
-    CHECK_LE(min_num_trials, max_num_trials);
+    // CHECK_GT(max_error, 0);
+    // CHECK_GE(min_inlier_ratio, 0);
+    // CHECK_LE(min_inlier_ratio, 1);
+    // CHECK_GE(confidence, 0);
+    // CHECK_LE(confidence, 1);
+    // CHECK_LE(min_num_trials, max_num_trials);
   }
 };
 
@@ -182,7 +182,7 @@ RANSAC<Estimator, SupportMeasurer, Sampler>::Estimate(
     const std::vector<typename Estimator::X_t>& X,
     const std::vector<typename Estimator::Y_t>& Y,
     const std::vector<double>& priors) {
-  CHECK_EQ(X.size(), Y.size());
+  // CHECK_EQ(X.size(), Y.size());
 
   const size_t num_samples = X.size();
 
@@ -231,7 +231,7 @@ RANSAC<Estimator, SupportMeasurer, Sampler>::Estimate(
     // Iterate through all estimated models.
     for (const auto& sample_model : sample_models) {
       estimator.Residuals(X, Y, sample_model, &residuals);
-      CHECK_EQ(residuals.size(), X.size());
+      // CHECK_EQ(residuals.size(), X.size());
 
       const auto support = support_measurer.Evaluate(residuals, max_residual);
 
@@ -268,7 +268,7 @@ RANSAC<Estimator, SupportMeasurer, Sampler>::Estimate(
   // evaluated model. Some benchmarking revealed that this approach is faster.
 
   estimator.Residuals(X, Y, report.model, &residuals);
-  CHECK_EQ(residuals.size(), X.size());
+  // CHECK_EQ(residuals.size(), X.size());
 
   report.inlier_mask.resize(num_samples);
   for (size_t i = 0; i < residuals.size(); ++i) {

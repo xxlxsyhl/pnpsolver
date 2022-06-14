@@ -64,8 +64,6 @@ if(EIGEN3_FOUND)
     message( STATUS "EIGEN3_INCLUDE_DIRS = ${EIGEN3_INCLUDE_DIRS}")
 endif()
 
-find_package(Glog REQUIRED)
-
 ################################################################################
 # Compiler specific configuration
 ################################################################################

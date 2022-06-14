@@ -117,8 +117,8 @@ Eigen::Vector3d QuaternionRotatePoint(const Eigen::Vector4d& qvec,
 
 Eigen::Vector4d AverageQuaternions(const std::vector<Eigen::Vector4d>& qvecs,
                                    const std::vector<double>& weights) {
-  CHECK_EQ(qvecs.size(), weights.size());
-  CHECK_GT(qvecs.size(), 0);
+  // CHECK_EQ(qvecs.size(), weights.size());
+  // CHECK_GT(qvecs.size(), 0);
 
   if (qvecs.size() == 1) {
     return qvecs[0];
@@ -128,7 +128,7 @@ Eigen::Vector4d AverageQuaternions(const std::vector<Eigen::Vector4d>& qvecs,
   double weight_sum = 0;
 
   for (size_t i = 0; i < qvecs.size(); ++i) {
-    CHECK_GT(weights[i], 0);
+    // CHECK_GT(weights[i], 0);
     const Eigen::Vector4d qvec = NormalizeQuaternion(qvecs[i]);
     A += weights[i] * qvec * qvec.transpose();
     weight_sum += weights[i];

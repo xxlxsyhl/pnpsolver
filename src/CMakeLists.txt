@@ -58,7 +58,7 @@ add_library(${LIBRARY_NAME} SHARED
         ${optim_src}
         ${util_src})
 set_target_properties(${LIBRARY_NAME} PROPERTIES POSITION_INDEPENDENT_CODE ON)
-target_link_libraries(${LIBRARY_NAME} ${Boost_LIBRARIES} ${CERES_LIBRARIES})
+target_link_libraries(${LIBRARY_NAME} ${CERES_LIBRARIES})
 
 
 install(TARGETS ${LIBRARY_NAME} LIBRARY  DESTINATION lib)

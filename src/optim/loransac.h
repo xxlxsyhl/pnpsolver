@@ -94,7 +94,7 @@ LORANSAC<Estimator, LocalEstimator, SupportMeasurer, Sampler>::Estimate(
     const std::vector<typename Estimator::X_t>& X,
     const std::vector<typename Estimator::Y_t>& Y,
     const std::vector<double>& priors) {
-  CHECK_EQ(X.size(), Y.size());
+  // CHECK_EQ(X.size(), Y.size());
 
   const size_t num_samples = X.size();
 
@@ -147,7 +147,7 @@ LORANSAC<Estimator, LocalEstimator, SupportMeasurer, Sampler>::Estimate(
     // Iterate through all estimated models
     for (const auto& sample_model : sample_models) {
       estimator.Residuals(X, Y, sample_model, &residuals);
-      CHECK_EQ(residuals.size(), X.size());
+      // CHECK_EQ(residuals.size(), X.size());
 
       const auto support = support_measurer.Evaluate(residuals, max_residual);
 
@@ -176,12 +176,12 @@ LORANSAC<Estimator, LocalEstimator, SupportMeasurer, Sampler>::Estimate(
 
           for (const auto& local_model : local_models) {
             local_estimator.Residuals(X, Y, local_model, &residuals);
-            CHECK_EQ(residuals.size(), X.size());
+            // CHECK_EQ(residuals.size(), X.size());
 
             const auto local_support =
                 support_measurer.Evaluate(residuals, max_residual);
 
-            // Check if non-locally optimized model is better.
+            // // CHECK if non-locally optimized model is better.
             if (support_measurer.Compare(local_support, best_support)) {
               best_support = local_support;
               best_model = local_model;
@@ -224,7 +224,7 @@ LORANSAC<Estimator, LocalEstimator, SupportMeasurer, Sampler>::Estimate(
     estimator.Residuals(X, Y, report.model, &residuals);
   }
 
-  CHECK_EQ(residuals.size(), X.size());
+  // CHECK_EQ(residuals.size(), X.size());
 
   report.inlier_mask.resize(num_samples);
   for (size_t i = 0; i < residuals.size(); ++i) {

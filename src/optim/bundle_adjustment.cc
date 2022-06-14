@@ -63,14 +63,14 @@ ceres::LossFunction* BundleAdjustmentOptions::CreateLossFunction() const {
       loss_function = new ceres::CauchyLoss(loss_function_scale);
       break;
   }
-  CHECK_NOTNULL(loss_function);
+  // CHECK_NOTNULL(loss_function);
   return loss_function;
 }
 
-bool BundleAdjustmentOptions::Check() const {
-  CHECK(loss_function_scale > 0);
-  return true;
-}
+// bool BundleAdjustmentOptions::CHECK() const {
+//   // CHECK(loss_function_scale > 0);
+//   return true;
+// }
 
 ////////////////////////////////////////////////////////////////////////////////
 // BundleAdjustmentConfig
@@ -162,8 +162,8 @@ bool BundleAdjustmentConfig::IsConstantCamera(const camera_t camera_id) const {
 }
 
 void BundleAdjustmentConfig::SetConstantPose(const image_t image_id) {
-  CHECK(HasImage(image_id));
-  CHECK(!HasConstantTvec(image_id));
+  // CHECK(HasImage(image_id));
+  // CHECK(!HasConstantTvec(image_id));
   constant_poses_.insert(image_id);
 }
 
@@ -177,12 +177,12 @@ bool BundleAdjustmentConfig::HasConstantPose(const image_t image_id) const {
 
 void BundleAdjustmentConfig::SetConstantTvec(const image_t image_id,
                                              const std::vector<int>& idxs) {
-  CHECK_GT(idxs.size(), 0);
-  CHECK_LE(idxs.size(), 3);
-  CHECK(HasImage(image_id));
-  CHECK(!HasConstantPose(image_id));
-  CHECK(!VectorContainsDuplicateValues(idxs))
-      << "Tvec indices must not contain duplicates";
+  // CHECK_GT(idxs.size(), 0);
+  // CHECK_LE(idxs.size(), 3);
+  // CHECK(HasImage(image_id));
+  // CHECK(!HasConstantPose(image_id));
+  // CHECK(!VectorContainsDuplicateValues(idxs))
+      // << "Tvec indices must not contain duplicates";
   constant_tvecs_.emplace(image_id, idxs);
 }
 
@@ -214,12 +214,12 @@ const std::vector<int>& BundleAdjustmentConfig::ConstantTvec(
 }
 
 void BundleAdjustmentConfig::AddVariablePoint(const point3D_t point3D_id) {
-  CHECK(!HasConstantPoint(point3D_id));
+  // CHECK(!HasConstantPoint(point3D_id));
   variable_point3D_ids_.insert(point3D_id);
 }
 
 void BundleAdjustmentConfig::AddConstantPoint(const point3D_t point3D_id) {
-  CHECK(!HasVariablePoint(point3D_id));
+  // CHECK(!HasVariablePoint(point3D_id));
   constant_point3D_ids_.insert(point3D_id);
 }
 

@@ -41,7 +41,7 @@ RandomSampler::RandomSampler(const size_t num_samples)
     : num_samples_(num_samples) {}
 
 void RandomSampler::Initialize(const size_t total_num_samples) {
-  CHECK_LE(num_samples_, total_num_samples);
+  // CHECK_LE(num_samples_, total_num_samples);
   sample_idxs_.resize(total_num_samples);
   std::iota(sample_idxs_.begin(), sample_idxs_.end(), 0);
 }
