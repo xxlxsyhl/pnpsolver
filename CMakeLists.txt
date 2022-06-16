@@ -29,7 +29,7 @@
 #
 # Author: Johannes L. Schoenberger (jsch-at-demuc-dot-de)
 
-cmake_minimum_required(VERSION 3.0)
+cmake_minimum_required(VERSION 3.16)
 project(pnpsolver VERSION 1.0.0)
 
 add_compile_options(-std=c++14)
@@ -41,24 +41,15 @@ add_compile_options(-O3)
 # ###############################################################################
 option(SIMD_ENABLED "Whether to enable SIMD optimizations" ON)
 option(OPENMP_ENABLED "Whether to enable OpenMP parallelization" ON)
+option(BUILD_TEST "Whether to enable test" OFF)
 
 # ###############################################################################
 # Find packages
 # ###############################################################################
-find_package(Eigen3 REQUIRED)
-
-if(EIGEN3_FOUND)
-    include_directories(${EIGEN3_INCLUDE_DIRS})
-    message(STATUS "EIGEN3_INCLUDE_DIRS = ${EIGEN3_INCLUDE_DIRS}")
-endif()
-
 find_package(Ceres REQUIRED)
 
 if(Ceres_FOUND)
     include_directories(${Ceres_INCLUDE_DIRS})
-    message(STATUS "Ceres_INCLUDE_DIRS = ${CERES_INCLUDE_DIRS}")
-    message(STATUS "Ceres_LIBRARIES = ${Ceres_LIBRARIES}")
-    message(STATUS "Ceres_LIB_VERSION = ${Ceres_LIB_VERSION}")
 endif()
 
 # ###############################################################################
@@ -97,6 +88,7 @@ endif()
 # Add sources
 # ###############################################################################
 add_subdirectory(src)
-add_subdirectory(test)
 
-# cmake ../ -DCMAKE_PREFIX_PATH="/data/Programs/xrprimer/install/share/eigen3/cmake;/data/Programs/xrprimer/install/lib/cmake/Ceres"
+if(BUILD_TEST)
+    add_subdirectory(test)
+endif()

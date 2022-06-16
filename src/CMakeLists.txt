@@ -4,16 +4,16 @@
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
 #
-#     * Redistributions of source code must retain the above copyright
-#       notice, this list of conditions and the following disclaimer.
+# * Redistributions of source code must retain the above copyright
+# notice, this list of conditions and the following disclaimer.
 #
-#     * Redistributions in binary form must reproduce the above copyright
-#       notice, this list of conditions and the following disclaimer in the
-#       documentation and/or other materials provided with the distribution.
+# * Redistributions in binary form must reproduce the above copyright
+# notice, this list of conditions and the following disclaimer in the
+# documentation and/or other materials provided with the distribution.
 #
-#     * Neither the name of ETH Zurich and UNC Chapel Hill nor the names of
-#       its contributors may be used to endorse or promote products derived
-#       from this software without specific prior written permission.
+# * Neither the name of ETH Zurich and UNC Chapel Hill nor the names of
+# its contributors may be used to endorse or promote products derived
+# from this software without specific prior written permission.
 #
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 # AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -34,7 +34,7 @@ if(IS_MSVC)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W3")
 elseif(IS_GNU OR IS_CLANG)
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -Wall")
 endif()
 
 set(LIBRARY_NAME pnpsolver)
@@ -52,14 +52,30 @@ aux_source_directory(optim optim_src)
 aux_source_directory(util util_src)
 
 add_library(${LIBRARY_NAME} SHARED
-        ${base_src}
-        ${interface_src}
-        ${estimators_src}
-        ${optim_src}
-        ${util_src})
+    ${base_src}
+    ${interface_src}
+    ${estimators_src}
+    ${optim_src}
+    ${util_src})
 set_target_properties(${LIBRARY_NAME} PROPERTIES POSITION_INDEPENDENT_CODE ON)
-target_link_libraries(${LIBRARY_NAME} ${CERES_LIBRARIES})
+target_link_libraries(${LIBRARY_NAME} Ceres::ceres)
+target_include_directories(${LIBRARY_NAME} PUBLIC
+    $<INSTALL_INTERFACE:include/>
+)
 
-
-install(TARGETS ${LIBRARY_NAME} LIBRARY  DESTINATION lib)
+install(TARGETS ${LIBRARY_NAME} DESTINATION lib EXPORT ${LIBRARY_NAME}-targets)
 install(FILES ${PROJECT_SOURCE_DIR}/src/interface/pnp_solver.h DESTINATION include)
+
+install(EXPORT ${LIBRARY_NAME}-targets DESTINATION lib/cmake NAMESPACE PnpSolver::)
+
+include(CMakePackageConfigHelpers)
+configure_package_config_file(${CMAKE_SOURCE_DIR}/cmake/PnpSolverConfig.cmake.in
+    "${CMAKE_CURRENT_BINARY_DIR}/PnpSolverConfig.cmake"
+    INSTALL_DESTINATION lib/cmake/
+    NO_CHECK_REQUIRED_COMPONENTS_MACRO
+)
+
+install(FILES
+    "${CMAKE_CURRENT_BINARY_DIR}/PnpSolverConfig.cmake"
+    DESTINATION lib/cmake
+)
