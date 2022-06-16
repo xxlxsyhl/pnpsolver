@@ -33,7 +33,7 @@
 
 #include <unordered_map>
 
-#include <boost/algorithm/string.hpp>
+
 
 namespace colmap {
 

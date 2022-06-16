@@ -33,7 +33,7 @@
 
 #include <Eigen/Eigenvalues>
 
-#include "util/logging.h"
+
 
 namespace colmap {
 namespace {

@@ -42,7 +42,7 @@
 #include "base/camera_models.h"
 #include "optim/loransac.h"
 #include "util/alignment.h"
-#include "util/logging.h"
+
 #include "util/threading.h"
 #include "util/types.h"
 
