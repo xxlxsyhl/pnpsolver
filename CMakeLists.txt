@@ -46,11 +46,12 @@ option(BUILD_TEST "Whether to enable test" OFF)
 # ###############################################################################
 # Find packages
 # ###############################################################################
-find_package(Ceres REQUIRED)
-
-if(Ceres_FOUND)
-    include_directories(${Ceres_INCLUDE_DIRS})
+# when use for add_subdirectory(), need external install Ceres and Eigen3
+if(${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_CURRENT_SOURCE_DIR})
+    find_package(Ceres REQUIRED)
+    find_package(Eigen3 REQUIRED)
 endif()
+
 
 # ###############################################################################
 # Compiler specific configuration

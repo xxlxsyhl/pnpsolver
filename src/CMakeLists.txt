@@ -58,7 +58,19 @@ add_library(${LIBRARY_NAME} SHARED
     ${optim_src}
     ${util_src})
 set_target_properties(${LIBRARY_NAME} PROPERTIES POSITION_INDEPENDENT_CODE ON)
-target_link_libraries(${LIBRARY_NAME} Ceres::ceres)
+
+if(TARGET ceres)
+    target_link_libraries(${LIBRARY_NAME} PUBLIC ceres)
+else()
+    target_link_libraries(${LIBRARY_NAME} PUBLIC Ceres::ceres)
+endif()
+
+if(TARGET Eigen3::Eigen)
+    target_link_libraries(${LIBRARY_NAME} PUBLIC Eigen3::Eigen)
+else()
+    target_include_directories(${LIBRARY_NAME} PUBLIC ${EIGEN3_INCLUDE_DIRS})
+endif()
+
 target_include_directories(${LIBRARY_NAME} PUBLIC
     $<INSTALL_INTERFACE:include/>
 )
@@ -69,7 +81,7 @@ install(FILES ${PROJECT_SOURCE_DIR}/src/interface/pnp_solver.h DESTINATION inclu
 install(EXPORT ${LIBRARY_NAME}-targets DESTINATION lib/cmake NAMESPACE PnpSolver::)
 
 include(CMakePackageConfigHelpers)
-configure_package_config_file(${CMAKE_SOURCE_DIR}/cmake/PnpSolverConfig.cmake.in
+configure_package_config_file(${CMAKE_CURRENT_SOURCE_DIR}/../cmake/PnpSolverConfig.cmake.in
     "${CMAKE_CURRENT_BINARY_DIR}/PnpSolverConfig.cmake"
     INSTALL_DESTINATION lib/cmake/
     NO_CHECK_REQUIRED_COMPONENTS_MACRO
