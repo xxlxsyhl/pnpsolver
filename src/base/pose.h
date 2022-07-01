@@ -207,7 +207,7 @@ Eigen::Vector3d CalculateBaseline(const Eigen::Vector4d& qvec1,
 ////////////////////////////////////////////////////////////////////////////////
 
 Eigen::Vector4d ComposeIdentityQuaternion() {
-  return Eigen::Vector4d(1, 0, 0, 0);
+    return Eigen::Vector4d(1, 0, 0, 0);
 }
 
 }  // namespace colmap

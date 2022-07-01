@@ -110,88 +110,89 @@ namespace colmap {
 //      thread.Timer().PrintElapsedSeconds();
 //
 class Thread {
- public:
-  enum {
-    STARTED_CALLBACK = INT_MIN,
-    FINISHED_CALLBACK,
-  };
+   public:
+    enum {
+        STARTED_CALLBACK = INT_MIN,
+        FINISHED_CALLBACK,
+    };
 
-  Thread();
-  virtual ~Thread() = default;
+    Thread();
+    virtual ~Thread() = default;
 
-  // Control the state of the thread.
-  virtual void Start();
-  virtual void Stop();
-  virtual void Pause();
-  virtual void Resume();
-  virtual void Wait();
+    // Control the state of the thread.
+    virtual void Start();
+    virtual void Stop();
+    virtual void Pause();
+    virtual void Resume();
+    virtual void Wait();
 
-  // Check the state of the thread.
-  bool IsStarted();
-  bool IsStopped();
-  bool IsPaused();
-  bool IsRunning();
-  bool IsFinished();
+    // Check the state of the thread.
+    bool IsStarted();
+    bool IsStopped();
+    bool IsPaused();
+    bool IsRunning();
+    bool IsFinished();
 
-  // To be called from inside the main run function. This blocks the main
-  // caller, if the thread is paused, until the thread is resumed.
-  void BlockIfPaused();
+    // To be called from inside the main run function. This blocks the main
+    // caller, if the thread is paused, until the thread is resumed.
+    void BlockIfPaused();
 
-  // To be called from outside. This blocks the caller until the thread is
-  // setup, i.e. it signaled that its setup was valid or not. If it never gives
-  // this signal, this call will block the caller infinitely. Check whether
-  // setup is valid. Note that the result is only meaningful if the thread gives
-  // a setup signal.
-  bool CheckValidSetup();
+    // To be called from outside. This blocks the caller until the thread is
+    // setup, i.e. it signaled that its setup was valid or not. If it never
+    // gives this signal, this call will block the caller infinitely. Check
+    // whether setup is valid. Note that the result is only meaningful if the
+    // thread gives a setup signal.
+    bool CheckValidSetup();
 
-  // Set callbacks that can be triggered within the main run function.
-  void AddCallback(const int id, const std::function<void()>& func);
+    // Set callbacks that can be triggered within the main run function.
+    void AddCallback(const int id, const std::function<void()>& func);
 
-  // Get timing information of the thread, properly accounting for pause times.
-  const Timer& GetTimer() const;
+    // Get timing information of the thread, properly accounting for pause
+    // times.
+    const Timer& GetTimer() const;
 
- protected:
-  // This is the main run function to be implemented by the child class. If you
-  // are looping over data and want to support the pause operation, call
-  // `BlockIfPaused` at appropriate places in the loop. To support the stop
-  // operation, check the `IsStopped` state and early return from this method.
-  virtual void Run() = 0;
+   protected:
+    // This is the main run function to be implemented by the child class. If
+    // you are looping over data and want to support the pause operation, call
+    // `BlockIfPaused` at appropriate places in the loop. To support the stop
+    // operation, check the `IsStopped` state and early return from this method.
+    virtual void Run() = 0;
 
-  // Register a new callback. Note that only registered callbacks can be
-  // set/reset and called from within the thread. Hence, this method should be
-  // called from the derived thread constructor.
-  void RegisterCallback(const int id);
+    // Register a new callback. Note that only registered callbacks can be
+    // set/reset and called from within the thread. Hence, this method should be
+    // called from the derived thread constructor.
+    void RegisterCallback(const int id);
 
-  // Call back to the function with the specified name, if it exists.
-  void Callback(const int id) const;
+    // Call back to the function with the specified name, if it exists.
+    void Callback(const int id) const;
 
-  // Get the unique identifier of the current thread.
-  std::thread::id GetThreadId() const;
+    // Get the unique identifier of the current thread.
+    std::thread::id GetThreadId() const;
 
-  // Signal that the thread is setup. Only call this function once.
-  void SignalValidSetup();
-  void SignalInvalidSetup();
+    // Signal that the thread is setup. Only call this function once.
+    void SignalValidSetup();
+    void SignalInvalidSetup();
 
- private:
-  // Wrapper around the main run function to set the finished flag.
-  void RunFunc();
+   private:
+    // Wrapper around the main run function to set the finished flag.
+    void RunFunc();
 
-  std::thread thread_;
-  std::mutex mutex_;
-  std::condition_variable pause_condition_;
-  std::condition_variable setup_condition_;
+    std::thread thread_;
+    std::mutex mutex_;
+    std::condition_variable pause_condition_;
+    std::condition_variable setup_condition_;
 
-  Timer timer_;
+    Timer timer_;
 
-  bool started_;
-  bool stopped_;
-  bool paused_;
-  bool pausing_;
-  bool finished_;
-  bool setup_;
-  bool setup_valid_;
+    bool started_;
+    bool stopped_;
+    bool paused_;
+    bool pausing_;
+    bool finished_;
+    bool setup_;
+    bool setup_valid_;
 
-  std::unordered_map<int, std::list<std::function<void()>>> callbacks_;
+    std::unordered_map<int, std::list<std::function<void()>>> callbacks_;
 };
 
 // A thread pool class to submit generic tasks (functors) to a pool of workers:
@@ -206,47 +207,47 @@ class Thread {
 //    thread_pool.Wait();
 //
 class ThreadPool {
- public:
-  static const int kMaxNumThreads = -1;
+   public:
+    static const int kMaxNumThreads = -1;
 
-  explicit ThreadPool(const int num_threads = kMaxNumThreads);
-  ~ThreadPool();
+    explicit ThreadPool(const int num_threads = kMaxNumThreads);
+    ~ThreadPool();
 
-  inline size_t NumThreads() const;
+    inline size_t NumThreads() const;
 
-  // Add new task to the thread pool.
-  template <class func_t, class... args_t>
-  auto AddTask(func_t&& f, args_t&&... args)
-      -> std::future<typename std::result_of<func_t(args_t...)>::type>;
+    // Add new task to the thread pool.
+    template <class func_t, class... args_t>
+    auto AddTask(func_t&& f, args_t&&... args)
+        -> std::future<typename std::result_of<func_t(args_t...)>::type>;
 
-  // Stop the execution of all workers.
-  void Stop();
+    // Stop the execution of all workers.
+    void Stop();
 
-  // Wait until tasks are finished.
-  void Wait();
+    // Wait until tasks are finished.
+    void Wait();
 
-  // Get the unique identifier of the current thread.
-  std::thread::id GetThreadId() const;
+    // Get the unique identifier of the current thread.
+    std::thread::id GetThreadId() const;
 
-  // Get the index of the current thread. In a thread pool of size N,
-  // the thread index defines the 0-based index of the thread in the pool.
-  // In other words, there are the thread indices 0, ..., N-1.
-  int GetThreadIndex();
+    // Get the index of the current thread. In a thread pool of size N,
+    // the thread index defines the 0-based index of the thread in the pool.
+    // In other words, there are the thread indices 0, ..., N-1.
+    int GetThreadIndex();
 
- private:
-  void WorkerFunc(const int index);
+   private:
+    void WorkerFunc(const int index);
 
-  std::vector<std::thread> workers_;
-  std::queue<std::function<void()>> tasks_;
+    std::vector<std::thread> workers_;
+    std::queue<std::function<void()>> tasks_;
 
-  std::mutex mutex_;
-  std::condition_variable task_condition_;
-  std::condition_variable finished_condition_;
+    std::mutex mutex_;
+    std::condition_variable task_condition_;
+    std::condition_variable finished_condition_;
 
-  bool stopped_;
-  int num_active_workers_;
+    bool stopped_;
+    int num_active_workers_;
 
-  std::unordered_map<std::thread::id, int> thread_id_to_index_;
+    std::unordered_map<std::thread::id, int> thread_id_to_index_;
 };
 
 // A job queue class for the producer-consumer paradigm.
@@ -272,54 +273,54 @@ class ThreadPool {
 //
 template <typename T>
 class JobQueue {
- public:
-  class Job {
    public:
-    Job() : valid_(false) {}
-    explicit Job(const T& data) : data_(data), valid_(true) {}
+    class Job {
+       public:
+        Job() : valid_(false) {}
+        explicit Job(const T& data) : data_(data), valid_(true) {}
 
-    // Check whether the data is valid.
-    bool IsValid() const { return valid_; }
+        // Check whether the data is valid.
+        bool IsValid() const { return valid_; }
 
-    // Get reference to the data.
-    T& Data() { return data_; }
-    const T& Data() const { return data_; }
+        // Get reference to the data.
+        T& Data() { return data_; }
+        const T& Data() const { return data_; }
+
+       private:
+        T data_;
+        bool valid_;
+    };
+
+    JobQueue();
+    explicit JobQueue(const size_t max_num_jobs);
+    ~JobQueue();
+
+    // The number of pushed and not popped jobs in the queue.
+    size_t Size();
+
+    // Push a new job to the queue. Waits if the number of jobs is exceeded.
+    bool Push(const T& data);
+
+    // Pop a job from the queue. Waits if there is no job in the queue.
+    Job Pop();
+
+    // Wait for all jobs to be popped and then stop the queue.
+    void Wait();
+
+    // Stop the queue and return from all push/pop calls with false.
+    void Stop();
+
+    // Clear all pushed and not popped jobs from the queue.
+    void Clear();
 
    private:
-    T data_;
-    bool valid_;
-  };
-
-  JobQueue();
-  explicit JobQueue(const size_t max_num_jobs);
-  ~JobQueue();
-
-  // The number of pushed and not popped jobs in the queue.
-  size_t Size();
-
-  // Push a new job to the queue. Waits if the number of jobs is exceeded.
-  bool Push(const T& data);
-
-  // Pop a job from the queue. Waits if there is no job in the queue.
-  Job Pop();
-
-  // Wait for all jobs to be popped and then stop the queue.
-  void Wait();
-
-  // Stop the queue and return from all push/pop calls with false.
-  void Stop();
-
-  // Clear all pushed and not popped jobs from the queue.
-  void Clear();
-
- private:
-  size_t max_num_jobs_;
-  std::atomic<bool> stop_;
-  std::queue<T> jobs_;
-  std::mutex mutex_;
-  std::condition_variable push_condition_;
-  std::condition_variable pop_condition_;
-  std::condition_variable empty_condition_;
+    size_t max_num_jobs_;
+    std::atomic<bool> stop_;
+    std::queue<T> jobs_;
+    std::mutex mutex_;
+    std::condition_variable push_condition_;
+    std::condition_variable pop_condition_;
+    std::condition_variable empty_condition_;
 };
 
 // Return the number of logical CPU cores if num_threads <= 0,
@@ -335,24 +336,24 @@ size_t ThreadPool::NumThreads() const { return workers_.size(); }
 template <class func_t, class... args_t>
 auto ThreadPool::AddTask(func_t&& f, args_t&&... args)
     -> std::future<typename std::result_of<func_t(args_t...)>::type> {
-  typedef typename std::result_of<func_t(args_t...)>::type return_t;
+    typedef typename std::result_of<func_t(args_t...)>::type return_t;
 
-  auto task = std::make_shared<std::packaged_task<return_t()>>(
-      std::bind(std::forward<func_t>(f), std::forward<args_t>(args)...));
+    auto task = std::make_shared<std::packaged_task<return_t()>>(
+        std::bind(std::forward<func_t>(f), std::forward<args_t>(args)...));
 
-  std::future<return_t> result = task->get_future();
+    std::future<return_t> result = task->get_future();
 
-  {
-    std::unique_lock<std::mutex> lock(mutex_);
-    if (stopped_) {
-      throw std::runtime_error("Cannot add task to stopped thread pool.");
+    {
+        std::unique_lock<std::mutex> lock(mutex_);
+        if (stopped_) {
+            throw std::runtime_error("Cannot add task to stopped thread pool.");
+        }
+        tasks_.emplace([task]() { (*task)(); });
     }
-    tasks_.emplace([task]() { (*task)(); });
-  }
 
-  task_condition_.notify_one();
+    task_condition_.notify_one();
 
-  return result;
+    return result;
 }
 
 template <typename T>
@@ -364,69 +365,69 @@ JobQueue<T>::JobQueue(const size_t max_num_jobs)
 
 template <typename T>
 JobQueue<T>::~JobQueue() {
-  Stop();
+    Stop();
 }
 
 template <typename T>
 size_t JobQueue<T>::Size() {
-  std::unique_lock<std::mutex> lock(mutex_);
-  return jobs_.size();
+    std::unique_lock<std::mutex> lock(mutex_);
+    return jobs_.size();
 }
 
 template <typename T>
 bool JobQueue<T>::Push(const T& data) {
-  std::unique_lock<std::mutex> lock(mutex_);
-  while (jobs_.size() >= max_num_jobs_ && !stop_) {
-    pop_condition_.wait(lock);
-  }
-  if (stop_) {
-    return false;
-  } else {
-    jobs_.push(data);
-    push_condition_.notify_one();
-    return true;
-  }
+    std::unique_lock<std::mutex> lock(mutex_);
+    while (jobs_.size() >= max_num_jobs_ && !stop_) {
+        pop_condition_.wait(lock);
+    }
+    if (stop_) {
+        return false;
+    } else {
+        jobs_.push(data);
+        push_condition_.notify_one();
+        return true;
+    }
 }
 
 template <typename T>
 typename JobQueue<T>::Job JobQueue<T>::Pop() {
-  std::unique_lock<std::mutex> lock(mutex_);
-  while (jobs_.empty() && !stop_) {
-    push_condition_.wait(lock);
-  }
-  if (stop_) {
-    return Job();
-  } else {
-    const T data = jobs_.front();
-    jobs_.pop();
-    pop_condition_.notify_one();
-    if (jobs_.empty()) {
-      empty_condition_.notify_all();
+    std::unique_lock<std::mutex> lock(mutex_);
+    while (jobs_.empty() && !stop_) {
+        push_condition_.wait(lock);
     }
-    return Job(data);
-  }
+    if (stop_) {
+        return Job();
+    } else {
+        const T data = jobs_.front();
+        jobs_.pop();
+        pop_condition_.notify_one();
+        if (jobs_.empty()) {
+            empty_condition_.notify_all();
+        }
+        return Job(data);
+    }
 }
 
 template <typename T>
 void JobQueue<T>::Wait() {
-  std::unique_lock<std::mutex> lock(mutex_);
-  while (!jobs_.empty()) {
-    empty_condition_.wait(lock);
-  }
+    std::unique_lock<std::mutex> lock(mutex_);
+    while (!jobs_.empty()) {
+        empty_condition_.wait(lock);
+    }
 }
 
 template <typename T>
 void JobQueue<T>::Stop() {
-  stop_ = true;
-  push_condition_.notify_all();
-  pop_condition_.notify_all();
+    stop_ = true;
+    push_condition_.notify_all();
+    pop_condition_.notify_all();
 }
 
 template <typename T>
 void JobQueue<T>::Clear() {
-  std::unique_lock<std::mutex> lock(mutex_);
-  std::queue<T> empty_jobs;
-  std::swap(jobs_, empty_jobs);
+    std::unique_lock<std::mutex> lock(mutex_);
+    std::queue<T> empty_jobs;
+    std::swap(jobs_, empty_jobs);
 }
 
 }  // namespace colmap

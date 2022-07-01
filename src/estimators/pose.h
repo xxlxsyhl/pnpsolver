@@ -42,7 +42,7 @@
 #include "base/camera_models.h"
 #include "optim/loransac.h"
 #include "util/alignment.h"
-#include "util/logging.h"
+
 #include "util/threading.h"
 #include "util/types.h"
 
@@ -53,65 +53,62 @@ enum RansacSampler {
     WEIGHT_SAMPLE = 2,
 };
 
-enum RansacRobustor {
-    ROBUSTRER_RANSAC = 1,
-    ROBUSTER_LORANSAC = 2
-};
+enum RansacRobustor { ROBUSTRER_RANSAC = 1, ROBUSTER_LORANSAC = 2 };
 
 struct AbsolutePoseEstimationOptions {
-  // Whether to estimate the focal length.
-  bool estimate_focal_length = false;
+    // Whether to estimate the focal length.
+    bool estimate_focal_length = false;
 
-  // Number of discrete samples for focal length estimation.
-  size_t num_focal_length_samples = 30;
+    // Number of discrete samples for focal length estimation.
+    size_t num_focal_length_samples = 30;
 
-  // Minimum focal length ratio for discrete focal length sampling
-  // around focal length of given camera.
-  double min_focal_length_ratio = 0.2;
+    // Minimum focal length ratio for discrete focal length sampling
+    // around focal length of given camera.
+    double min_focal_length_ratio = 0.2;
 
-  // Maximum focal length ratio for discrete focal length sampling
-  // around focal length of given camera.
-  double max_focal_length_ratio = 5;
+    // Maximum focal length ratio for discrete focal length sampling
+    // around focal length of given camera.
+    double max_focal_length_ratio = 5;
 
-  // Number of threads for parallel estimation of focal length.
-  int num_threads = ThreadPool::kMaxNumThreads;
+    // Number of threads for parallel estimation of focal length.
+    int num_threads = ThreadPool::kMaxNumThreads;
 
-  // Options used for P3P RANSAC.
-  RANSACOptions ransac_options;
+    // Options used for P3P RANSAC.
+    RANSACOptions ransac_options;
 
-  void Check() const {
-    // CHECK_GT(num_focal_length_samples, 0);
-    // CHECK_GT(min_focal_length_ratio, 0);
-    // CHECK_GT(max_focal_length_ratio, 0);
-    // CHECK_LT(min_focal_length_ratio, max_focal_length_ratio);
-    ransac_options.Check();
-  }
+    void Check() const {
+        // CHECK_GT(num_focal_length_samples, 0);
+        // CHECK_GT(min_focal_length_ratio, 0);
+        // CHECK_GT(max_focal_length_ratio, 0);
+        // CHECK_LT(min_focal_length_ratio, max_focal_length_ratio);
+        ransac_options.Check();
+    }
 };
 
 struct AbsolutePoseRefinementOptions {
-  // Convergence criterion.
-  double gradient_tolerance = 1.0;
+    // Convergence criterion.
+    double gradient_tolerance = 1.0;
 
-  // Maximum number of solver iterations.
-  int max_num_iterations = 100;
+    // Maximum number of solver iterations.
+    int max_num_iterations = 100;
 
-  // Scaling factor determines at which residual robustification takes place.
-  double loss_function_scale = 1.0;
+    // Scaling factor determines at which residual robustification takes place.
+    double loss_function_scale = 1.0;
 
-  // Whether to refine the focal length parameter group.
-  bool refine_focal_length = true;
+    // Whether to refine the focal length parameter group.
+    bool refine_focal_length = true;
 
-  // Whether to refine the extra parameter group.
-  bool refine_extra_params = true;
+    // Whether to refine the extra parameter group.
+    bool refine_extra_params = true;
 
-  // Whether to print final summary.
-  bool print_summary = true;
+    // Whether to print final summary.
+    bool print_summary = true;
 
-  void Check() const {
-    // CHECK_GE(gradient_tolerance, 0.0);
-    // CHECK_GE(max_num_iterations, 0);
-    // CHECK_GE(loss_function_scale, 0.0);
-  }
+    void Check() const {
+        // CHECK_GE(gradient_tolerance, 0.0);
+        // CHECK_GE(max_num_iterations, 0);
+        // CHECK_GE(loss_function_scale, 0.0);
+    }
 };
 
 // Estimate absolute pose (optionally focal length) from 2D-3D correspondences.
@@ -133,7 +130,8 @@ struct AbsolutePoseRefinementOptions {
 //
 // @param robustor             ransac or lo-ransac.
 // @param sampler              random, weighted, progressive sampling.
-// @param priors               if weighted or progressive sampling, the priors should be provided
+// @param priors               if weighted or progressive sampling, the priors
+// should be provided
 //
 // @return                     Whether pose is estimated successfully.
 bool EstimateAbsolutePose(const AbsolutePoseEstimationOptions& options,
@@ -142,10 +140,8 @@ bool EstimateAbsolutePose(const AbsolutePoseEstimationOptions& options,
                           Eigen::Vector4d* qvec, Eigen::Vector3d* tvec,
                           Camera* camera, size_t* num_inliers,
                           std::vector<char>* inlier_mask,
-                          RansacRobustor robustor,
-                          RansacSampler sampler,
+                          RansacRobustor robustor, RansacSampler sampler,
                           const std::vector<double>& priors);
-
 
 // Refine absolute pose (optionally focal length) from 2D-3D correspondences.
 //

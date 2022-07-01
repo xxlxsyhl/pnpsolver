@@ -31,8 +31,6 @@
 
 #include "util/timer.h"
 
-#include "util/logging.h"
-
 using namespace std::chrono;
 
 namespace colmap {
@@ -40,42 +38,42 @@ namespace colmap {
 Timer::Timer() : started_(false), paused_(false) {}
 
 void Timer::Start() {
-  started_ = true;
-  paused_ = false;
-  start_time_ = high_resolution_clock::now();
+    started_ = true;
+    paused_ = false;
+    start_time_ = high_resolution_clock::now();
 }
 
 void Timer::Restart() {
-  started_ = false;
-  Start();
+    started_ = false;
+    Start();
 }
 
 void Timer::Pause() {
-  paused_ = true;
-  pause_time_ = high_resolution_clock::now();
+    paused_ = true;
+    pause_time_ = high_resolution_clock::now();
 }
 
 void Timer::Resume() {
-  paused_ = false;
-  start_time_ += high_resolution_clock::now() - pause_time_;
+    paused_ = false;
+    start_time_ += high_resolution_clock::now() - pause_time_;
 }
 
 void Timer::Reset() {
-  started_ = false;
-  paused_ = false;
+    started_ = false;
+    paused_ = false;
 }
 
 double Timer::ElapsedMicroSeconds() const {
-  if (!started_) {
-    return 0.0;
-  }
-  if (paused_) {
-    return duration_cast<microseconds>(pause_time_ - start_time_).count();
-  } else {
-    return duration_cast<microseconds>(high_resolution_clock::now() -
-                                       start_time_)
-        .count();
-  }
+    if (!started_) {
+        return 0.0;
+    }
+    if (paused_) {
+        return duration_cast<microseconds>(pause_time_ - start_time_).count();
+    } else {
+        return duration_cast<microseconds>(high_resolution_clock::now() -
+                                           start_time_)
+            .count();
+    }
 }
 
 double Timer::ElapsedSeconds() const { return ElapsedMicroSeconds() / 1e6; }

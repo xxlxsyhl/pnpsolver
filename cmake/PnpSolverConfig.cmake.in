@@ -1,0 +1,5 @@
+@PACKAGE_INIT@
+
+IF(NOT TARGET PnpSolver::pnpsolver)
+  INCLUDE("${CMAKE_CURRENT_LIST_DIR}/pnpsolver-targets.cmake")
+ENDIF()
