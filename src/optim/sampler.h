@@ -35,13 +35,11 @@
 #include <cstddef>
 #include <vector>
 
-namespace colmap
-{
+namespace colmap {
 
-  // Abstract base class for sampling methods.
-  class Sampler
-  {
-  public:
+// Abstract base class for sampling methods.
+class Sampler {
+   public:
     Sampler(){};
     explicit Sampler(const size_t num_samples);
 
@@ -69,35 +67,31 @@ namespace colmap
     // should equal `num_samples`. The same applies for `Y` and `Y_rand`.
     template <typename X_t, typename Y_t>
     void SampleXY(const X_t &X, const Y_t &Y, X_t *X_rand, Y_t *Y_rand);
-  };
+};
 
-  ////////////////////////////////////////////////////////////////////////////////
-  // Implementation
-  ////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+// Implementation
+////////////////////////////////////////////////////////////////////////////////
 
-  template <typename X_t>
-  void Sampler::SampleX(const X_t &X, X_t *X_rand)
-  {
+template <typename X_t>
+void Sampler::SampleX(const X_t &X, X_t *X_rand) {
     const auto sample_idxs = Sample();
-    for (size_t i = 0; i < X_rand->size(); ++i)
-    {
-      (*X_rand)[i] = X[sample_idxs[i]];
+    for (size_t i = 0; i < X_rand->size(); ++i) {
+        (*X_rand)[i] = X[sample_idxs[i]];
     }
-  }
+}
 
-  template <typename X_t, typename Y_t>
-  void Sampler::SampleXY(const X_t &X, const Y_t &Y, X_t *X_rand, Y_t *Y_rand)
-  {
+template <typename X_t, typename Y_t>
+void Sampler::SampleXY(const X_t &X, const Y_t &Y, X_t *X_rand, Y_t *Y_rand) {
     // CHECK_EQ(X.size(), Y.size());
     // CHECK_EQ(X_rand->size(), Y_rand->size());
     const auto sample_idxs = Sample();
-    for (size_t i = 0; i < X_rand->size(); ++i)
-    {
-      (*X_rand)[i] = X[sample_idxs[i]];
-      (*Y_rand)[i] = Y[sample_idxs[i]];
+    for (size_t i = 0; i < X_rand->size(); ++i) {
+        (*X_rand)[i] = X[sample_idxs[i]];
+        (*Y_rand)[i] = Y[sample_idxs[i]];
     }
-  }
+}
 
-} // namespace colmap
+}  // namespace colmap
 
-#endif // COLMAP_SRC_OPTIM_SAMPLER_H_
+#endif  // COLMAP_SRC_OPTIM_SAMPLER_H_

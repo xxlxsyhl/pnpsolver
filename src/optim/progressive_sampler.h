@@ -46,26 +46,26 @@ namespace colmap {
 // function in descending order, i.e., higher quality data is closer to the
 // front of the list.
 class ProgressiveSampler : public Sampler {
- public:
-  explicit ProgressiveSampler(const size_t num_samples);
+   public:
+    explicit ProgressiveSampler(const size_t num_samples);
 
-  void Initialize(const size_t total_num_samples) override;
+    void Initialize(const size_t total_num_samples) override;
 
-  size_t MaxNumSamples() override;
+    size_t MaxNumSamples() override;
 
-  std::vector<size_t> Sample() override;
+    std::vector<size_t> Sample() override;
 
- private:
-  const size_t num_samples_;
-  size_t total_num_samples_;
+   private:
+    const size_t num_samples_;
+    size_t total_num_samples_;
 
-  // The number of generated samples, i.e. the number of calls to `Sample`.
-  size_t t_;
-  size_t n_;
+    // The number of generated samples, i.e. the number of calls to `Sample`.
+    size_t t_;
+    size_t n_;
 
-  // Variables defined in equation 3.
-  double T_n_;
-  double T_n_p_;
+    // Variables defined in equation 3.
+    double T_n_;
+    double T_n_p_;
 };
 
 }  // namespace colmap

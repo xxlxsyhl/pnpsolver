@@ -31,26 +31,22 @@
 
 #include "estimators/utils.h"
 
-namespace colmap
-{
+namespace colmap {
 
-  void CenterAndNormalizeImagePoints(const std::vector<Eigen::Vector2d> &points,
-                                     std::vector<Eigen::Vector2d> *normed_points,
-                                     Eigen::Matrix3d *matrix)
-  {
+void CenterAndNormalizeImagePoints(const std::vector<Eigen::Vector2d> &points,
+                                   std::vector<Eigen::Vector2d> *normed_points,
+                                   Eigen::Matrix3d *matrix) {
     // Calculate centroid
     Eigen::Vector2d centroid(0, 0);
-    for (const auto point : points)
-    {
-      centroid += point;
+    for (const auto point : points) {
+        centroid += point;
     }
     centroid /= points.size();
 
     // Root mean square error to centroid of all points
     double rms_mean_dist = 0;
-    for (const auto point : points)
-    {
-      rms_mean_dist += (point - centroid).squaredNorm();
+    for (const auto point : points) {
+        rms_mean_dist += (point - centroid).squaredNorm();
     }
     rms_mean_dist = std::sqrt(rms_mean_dist / points.size());
 
@@ -72,26 +68,24 @@ namespace colmap
     const double M_21 = (*matrix)(2, 1);
     const double M_22 = (*matrix)(2, 2);
 
-    for (size_t i = 0; i < points.size(); ++i)
-    {
-      const double p_0 = points[i](0);
-      const double p_1 = points[i](1);
+    for (size_t i = 0; i < points.size(); ++i) {
+        const double p_0 = points[i](0);
+        const double p_1 = points[i](1);
 
-      const double np_0 = M_00 * p_0 + M_01 * p_1 + M_02;
-      const double np_1 = M_10 * p_0 + M_11 * p_1 + M_12;
-      const double np_2 = M_20 * p_0 + M_21 * p_1 + M_22;
+        const double np_0 = M_00 * p_0 + M_01 * p_1 + M_02;
+        const double np_1 = M_10 * p_0 + M_11 * p_1 + M_12;
+        const double np_2 = M_20 * p_0 + M_21 * p_1 + M_22;
 
-      const double inv_np_2 = 1.0 / np_2;
-      (*normed_points)[i](0) = np_0 * inv_np_2;
-      (*normed_points)[i](1) = np_1 * inv_np_2;
+        const double inv_np_2 = 1.0 / np_2;
+        (*normed_points)[i](0) = np_0 * inv_np_2;
+        (*normed_points)[i](1) = np_1 * inv_np_2;
     }
-  }
+}
 
-  void ComputeSquaredSampsonError(const std::vector<Eigen::Vector2d> &points1,
-                                  const std::vector<Eigen::Vector2d> &points2,
-                                  const Eigen::Matrix3d &E,
-                                  std::vector<double> *residuals)
-  {
+void ComputeSquaredSampsonError(const std::vector<Eigen::Vector2d> &points1,
+                                const std::vector<Eigen::Vector2d> &points2,
+                                const Eigen::Matrix3d &E,
+                                std::vector<double> *residuals) {
     // CHECK_EQ(points1.size(), points2.size());
 
     residuals->resize(points1.size());
@@ -109,37 +103,35 @@ namespace colmap
     const double E_21 = E(2, 1);
     const double E_22 = E(2, 2);
 
-    for (size_t i = 0; i < points1.size(); ++i)
-    {
-      const double x1_0 = points1[i](0);
-      const double x1_1 = points1[i](1);
-      const double x2_0 = points2[i](0);
-      const double x2_1 = points2[i](1);
+    for (size_t i = 0; i < points1.size(); ++i) {
+        const double x1_0 = points1[i](0);
+        const double x1_1 = points1[i](1);
+        const double x2_0 = points2[i](0);
+        const double x2_1 = points2[i](1);
 
-      // Ex1 = E * points1[i].homogeneous();
-      const double Ex1_0 = E_00 * x1_0 + E_01 * x1_1 + E_02;
-      const double Ex1_1 = E_10 * x1_0 + E_11 * x1_1 + E_12;
-      const double Ex1_2 = E_20 * x1_0 + E_21 * x1_1 + E_22;
+        // Ex1 = E * points1[i].homogeneous();
+        const double Ex1_0 = E_00 * x1_0 + E_01 * x1_1 + E_02;
+        const double Ex1_1 = E_10 * x1_0 + E_11 * x1_1 + E_12;
+        const double Ex1_2 = E_20 * x1_0 + E_21 * x1_1 + E_22;
 
-      // Etx2 = E.transpose() * points2[i].homogeneous();
-      const double Etx2_0 = E_00 * x2_0 + E_10 * x2_1 + E_20;
-      const double Etx2_1 = E_01 * x2_0 + E_11 * x2_1 + E_21;
+        // Etx2 = E.transpose() * points2[i].homogeneous();
+        const double Etx2_0 = E_00 * x2_0 + E_10 * x2_1 + E_20;
+        const double Etx2_1 = E_01 * x2_0 + E_11 * x2_1 + E_21;
 
-      // x2tEx1 = points2[i].homogeneous().transpose() * Ex1;
-      const double x2tEx1 = x2_0 * Ex1_0 + x2_1 * Ex1_1 + Ex1_2;
+        // x2tEx1 = points2[i].homogeneous().transpose() * Ex1;
+        const double x2tEx1 = x2_0 * Ex1_0 + x2_1 * Ex1_1 + Ex1_2;
 
-      // Sampson distance
-      (*residuals)[i] =
-          x2tEx1 * x2tEx1 /
-          (Ex1_0 * Ex1_0 + Ex1_1 * Ex1_1 + Etx2_0 * Etx2_0 + Etx2_1 * Etx2_1);
+        // Sampson distance
+        (*residuals)[i] =
+            x2tEx1 * x2tEx1 /
+            (Ex1_0 * Ex1_0 + Ex1_1 * Ex1_1 + Etx2_0 * Etx2_0 + Etx2_1 * Etx2_1);
     }
-  }
+}
 
-  void ComputeSquaredReprojectionError(
-      const std::vector<Eigen::Vector2d> &points2D,
-      const std::vector<Eigen::Vector3d> &points3D,
-      const Eigen::Matrix3x4d &proj_matrix, std::vector<double> *residuals)
-  {
+void ComputeSquaredReprojectionError(
+    const std::vector<Eigen::Vector2d> &points2D,
+    const std::vector<Eigen::Vector3d> &points3D,
+    const Eigen::Matrix3x4d &proj_matrix, std::vector<double> *residuals) {
     // CHECK_EQ(points2D.size(), points3D.size());
 
     residuals->resize(points2D.size());
@@ -160,35 +152,31 @@ namespace colmap
     const double P_22 = proj_matrix(2, 2);
     const double P_23 = proj_matrix(2, 3);
 
-    for (size_t i = 0; i < points2D.size(); ++i)
-    {
-      const double X_0 = points3D[i](0);
-      const double X_1 = points3D[i](1);
-      const double X_2 = points3D[i](2);
+    for (size_t i = 0; i < points2D.size(); ++i) {
+        const double X_0 = points3D[i](0);
+        const double X_1 = points3D[i](1);
+        const double X_2 = points3D[i](2);
 
-      // Project 3D point from world to camera.
-      const double px_2 = P_20 * X_0 + P_21 * X_1 + P_22 * X_2 + P_23;
+        // Project 3D point from world to camera.
+        const double px_2 = P_20 * X_0 + P_21 * X_1 + P_22 * X_2 + P_23;
 
-      // Check if 3D point is in front of camera.
-      if (px_2 > std::numeric_limits<double>::epsilon())
-      {
-        const double px_0 = P_00 * X_0 + P_01 * X_1 + P_02 * X_2 + P_03;
-        const double px_1 = P_10 * X_0 + P_11 * X_1 + P_12 * X_2 + P_13;
+        // Check if 3D point is in front of camera.
+        if (px_2 > std::numeric_limits<double>::epsilon()) {
+            const double px_0 = P_00 * X_0 + P_01 * X_1 + P_02 * X_2 + P_03;
+            const double px_1 = P_10 * X_0 + P_11 * X_1 + P_12 * X_2 + P_13;
 
-        const double x_0 = points2D[i](0);
-        const double x_1 = points2D[i](1);
+            const double x_0 = points2D[i](0);
+            const double x_1 = points2D[i](1);
 
-        const double inv_px_2 = 1.0 / px_2;
-        const double dx_0 = x_0 - px_0 * inv_px_2;
-        const double dx_1 = x_1 - px_1 * inv_px_2;
+            const double inv_px_2 = 1.0 / px_2;
+            const double dx_0 = x_0 - px_0 * inv_px_2;
+            const double dx_1 = x_1 - px_1 * inv_px_2;
 
-        (*residuals)[i] = dx_0 * dx_0 + dx_1 * dx_1;
-      }
-      else
-      {
-        (*residuals)[i] = std::numeric_limits<double>::max();
-      }
+            (*residuals)[i] = dx_0 * dx_0 + dx_1 * dx_1;
+        } else {
+            (*residuals)[i] = std::numeric_limits<double>::max();
+        }
     }
-  }
+}
 
-} // namespace colmap
+}  // namespace colmap

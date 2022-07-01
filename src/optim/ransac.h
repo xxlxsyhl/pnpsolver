@@ -41,17 +41,15 @@
 #include "optim/support_measurement.h"
 #include "util/alignment.h"
 
-namespace colmap
-{
+namespace colmap {
 
-  struct RANSACOptions
-  {
+struct RANSACOptions {
     // Maximum error for a sample to be considered as an inlier. Note that
     // the residual of an estimator corresponds to a squared error.
     double max_error = 0.0;
 
-    // A priori assumed minimum inlier ratio, which determines the maximum number
-    // of iterations. Only applies if smaller than `max_num_trials`.
+    // A priori assumed minimum inlier ratio, which determines the maximum
+    // number of iterations. Only applies if smaller than `max_num_trials`.
     double min_inlier_ratio = 0.1;
 
     // Abort the iteration if minimum probability that one sample is free from
@@ -66,40 +64,37 @@ namespace colmap
     size_t min_num_trials = 0;
     size_t max_num_trials = std::numeric_limits<size_t>::max();
 
-    void Check() const
-    {
-      // CHECK_GT(max_error, 0);
-      // CHECK_GE(min_inlier_ratio, 0);
-      // CHECK_LE(min_inlier_ratio, 1);
-      // CHECK_GE(confidence, 0);
-      // CHECK_LE(confidence, 1);
-      // CHECK_LE(min_num_trials, max_num_trials);
+    void Check() const {
+        // CHECK_GT(max_error, 0);
+        // CHECK_GE(min_inlier_ratio, 0);
+        // CHECK_LE(min_inlier_ratio, 1);
+        // CHECK_GE(confidence, 0);
+        // CHECK_LE(confidence, 1);
+        // CHECK_LE(min_num_trials, max_num_trials);
     }
-  };
+};
 
-  template <typename Estimator, typename SupportMeasurer = InlierSupportMeasurer,
-            typename Sampler = RandomSampler>
-  class RANSAC
-  {
-  public:
-    struct Report
-    {
-      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+template <typename Estimator, typename SupportMeasurer = InlierSupportMeasurer,
+          typename Sampler = RandomSampler>
+class RANSAC {
+   public:
+    struct Report {
+        EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
-      // Whether the estimation was successful.
-      bool success = false;
+        // Whether the estimation was successful.
+        bool success = false;
 
-      // The number of RANSAC trials / iterations.
-      size_t num_trials = 0;
+        // The number of RANSAC trials / iterations.
+        size_t num_trials = 0;
 
-      // The support of the estimated model.
-      typename SupportMeasurer::Support support;
+        // The support of the estimated model.
+        typename SupportMeasurer::Support support;
 
-      // Boolean mask which is true if a sample is an inlier.
-      std::vector<char> inlier_mask;
+        // Boolean mask which is true if a sample is an inlier.
+        std::vector<char> inlier_mask;
 
-      // The estimated model.
-      typename Estimator::M_t model;
+        // The estimated model.
+        typename Estimator::M_t model;
     };
 
     explicit RANSAC(const RANSACOptions &options);
@@ -109,8 +104,10 @@ namespace colmap
     // given the inlier ratio.
     //
     // @param num_inliers				The number of inliers.
-    // @param num_samples				The total number of samples.
-    // @param confidence				Confidence that one sample is
+    // @param num_samples				The total number of
+    // samples.
+    // @param confidence				Confidence that one sample
+    // is
     //								outlier-free.
     // @param num_trials_multiplier   Multiplication factor to the computed
     //							    number of trials.
@@ -137,60 +134,55 @@ namespace colmap
     Sampler sampler;
     SupportMeasurer support_measurer;
 
-  protected:
+   protected:
     RANSACOptions options_;
-  };
+};
 
-  ////////////////////////////////////////////////////////////////////////////////
-  // Implementation
-  ////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+// Implementation
+////////////////////////////////////////////////////////////////////////////////
 
-  template <typename Estimator, typename SupportMeasurer, typename Sampler>
-  RANSAC<Estimator, SupportMeasurer, Sampler>::RANSAC(
-      const RANSACOptions &options)
-      : sampler(Sampler(Estimator::kMinNumSamples)), options_(options)
-  {
+template <typename Estimator, typename SupportMeasurer, typename Sampler>
+RANSAC<Estimator, SupportMeasurer, Sampler>::RANSAC(
+    const RANSACOptions &options)
+    : sampler(Sampler(Estimator::kMinNumSamples)), options_(options) {
     options.Check();
 
     // Determine max_num_trials based on assumed `min_inlier_ratio`.
     const size_t kNumSamples = 100000;
     const size_t dyn_max_num_trials = ComputeNumTrials(
-        static_cast<size_t>(options_.min_inlier_ratio * kNumSamples), kNumSamples,
-        options_.confidence, options_.dyn_num_trials_multiplier);
+        static_cast<size_t>(options_.min_inlier_ratio * kNumSamples),
+        kNumSamples, options_.confidence, options_.dyn_num_trials_multiplier);
     options_.max_num_trials =
         std::min<size_t>(options_.max_num_trials, dyn_max_num_trials);
-  }
+}
 
-  template <typename Estimator, typename SupportMeasurer, typename Sampler>
-  size_t RANSAC<Estimator, SupportMeasurer, Sampler>::ComputeNumTrials(
-      const size_t num_inliers, const size_t num_samples, const double confidence,
-      const double num_trials_multiplier)
-  {
+template <typename Estimator, typename SupportMeasurer, typename Sampler>
+size_t RANSAC<Estimator, SupportMeasurer, Sampler>::ComputeNumTrials(
+    const size_t num_inliers, const size_t num_samples, const double confidence,
+    const double num_trials_multiplier) {
     const double inlier_ratio = num_inliers / static_cast<double>(num_samples);
 
     const double nom = 1 - confidence;
-    if (nom <= 0)
-    {
-      return std::numeric_limits<size_t>::max();
+    if (nom <= 0) {
+        return std::numeric_limits<size_t>::max();
     }
 
     const double denom = 1 - std::pow(inlier_ratio, Estimator::kMinNumSamples);
-    if (denom <= 0)
-    {
-      return 1;
+    if (denom <= 0) {
+        return 1;
     }
 
     return static_cast<size_t>(
         std::ceil(std::log(nom) / std::log(denom) * num_trials_multiplier));
-  }
+}
 
-  template <typename Estimator, typename SupportMeasurer, typename Sampler>
-  typename RANSAC<Estimator, SupportMeasurer, Sampler>::Report
-  RANSAC<Estimator, SupportMeasurer, Sampler>::Estimate(
-      const std::vector<typename Estimator::X_t> &X,
-      const std::vector<typename Estimator::Y_t> &Y,
-      const std::vector<double> &priors)
-  {
+template <typename Estimator, typename SupportMeasurer, typename Sampler>
+typename RANSAC<Estimator, SupportMeasurer, Sampler>::Report
+RANSAC<Estimator, SupportMeasurer, Sampler>::Estimate(
+    const std::vector<typename Estimator::X_t> &X,
+    const std::vector<typename Estimator::Y_t> &Y,
+    const std::vector<double> &priors) {
     // CHECK_EQ(X.size(), Y.size());
 
     const size_t num_samples = X.size();
@@ -199,9 +191,8 @@ namespace colmap
     report.success = false;
     report.num_trials = 0;
 
-    if (num_samples < Estimator::kMinNumSamples)
-    {
-      return report;
+    if (num_samples < Estimator::kMinNumSamples) {
+        return report;
     }
 
     typename SupportMeasurer::Support best_support;
@@ -217,9 +208,8 @@ namespace colmap
     std::vector<typename Estimator::Y_t> Y_rand(Estimator::kMinNumSamples);
 
     sampler.Initialize(num_samples);
-    if (!priors.empty())
-    {
-      sampler.SetPriors(priors);
+    if (!priors.empty()) {
+        sampler.SetPriors(priors);
     }
 
     size_t max_num_trials = options_.max_num_trials;
@@ -227,55 +217,50 @@ namespace colmap
     size_t dyn_max_num_trials = max_num_trials;
 
     for (report.num_trials = 0; report.num_trials < max_num_trials;
-         ++report.num_trials)
-    {
-      if (abort)
-      {
-        report.num_trials += 1;
-        break;
-      }
-
-      sampler.SampleXY(X, Y, &X_rand, &Y_rand);
-
-      // Estimate model for current subset.
-      const std::vector<typename Estimator::M_t> sample_models =
-          estimator.Estimate(X_rand, Y_rand);
-
-      // Iterate through all estimated models.
-      for (const auto &sample_model : sample_models)
-      {
-        estimator.Residuals(X, Y, sample_model, &residuals);
-        // CHECK_EQ(residuals.size(), X.size());
-
-        const auto support = support_measurer.Evaluate(residuals, max_residual);
-
-        // Save as best subset if better than all previous subsets.
-        if (support_measurer.Compare(support, best_support))
-        {
-          best_support = support;
-          best_model = sample_model;
-
-          dyn_max_num_trials = ComputeNumTrials(
-              best_support.num_inliers, num_samples, options_.confidence,
-              options_.dyn_num_trials_multiplier);
+         ++report.num_trials) {
+        if (abort) {
+            report.num_trials += 1;
+            break;
         }
 
-        if (report.num_trials >= dyn_max_num_trials &&
-            report.num_trials >= options_.min_num_trials)
-        {
-          abort = true;
-          break;
+        sampler.SampleXY(X, Y, &X_rand, &Y_rand);
+
+        // Estimate model for current subset.
+        const std::vector<typename Estimator::M_t> sample_models =
+            estimator.Estimate(X_rand, Y_rand);
+
+        // Iterate through all estimated models.
+        for (const auto &sample_model : sample_models) {
+            estimator.Residuals(X, Y, sample_model, &residuals);
+            // CHECK_EQ(residuals.size(), X.size());
+
+            const auto support =
+                support_measurer.Evaluate(residuals, max_residual);
+
+            // Save as best subset if better than all previous subsets.
+            if (support_measurer.Compare(support, best_support)) {
+                best_support = support;
+                best_model = sample_model;
+
+                dyn_max_num_trials = ComputeNumTrials(
+                    best_support.num_inliers, num_samples, options_.confidence,
+                    options_.dyn_num_trials_multiplier);
+            }
+
+            if (report.num_trials >= dyn_max_num_trials &&
+                report.num_trials >= options_.min_num_trials) {
+                abort = true;
+                break;
+            }
         }
-      }
     }
 
     report.support = best_support;
     report.model = best_model;
 
     // No valid model was found.
-    if (report.support.num_inliers < estimator.kMinNumSamples)
-    {
-      return report;
+    if (report.support.num_inliers < estimator.kMinNumSamples) {
+        return report;
     }
 
     report.success = true;
@@ -288,21 +273,17 @@ namespace colmap
     // CHECK_EQ(residuals.size(), X.size());
 
     report.inlier_mask.resize(num_samples);
-    for (size_t i = 0; i < residuals.size(); ++i)
-    {
-      if (residuals[i] <= max_residual)
-      {
-        report.inlier_mask[i] = true;
-      }
-      else
-      {
-        report.inlier_mask[i] = false;
-      }
+    for (size_t i = 0; i < residuals.size(); ++i) {
+        if (residuals[i] <= max_residual) {
+            report.inlier_mask[i] = true;
+        } else {
+            report.inlier_mask[i] = false;
+        }
     }
 
     return report;
-  }
+}
 
-} // namespace colmap
+}  // namespace colmap
 
-#endif // COLMAP_SRC_OPTIM_RANSAC_H_
+#endif  // COLMAP_SRC_OPTIM_RANSAC_H_
