@@ -58,6 +58,8 @@ add_library(${LIBRARY_NAME} SHARED
     ${optim_src}
     ${util_src})
 set_target_properties(${LIBRARY_NAME} PROPERTIES POSITION_INDEPENDENT_CODE ON)
+add_library(PnpSolver::pnpsolver ALIAS ${LIBRARY_NAME})
+
 
 if(TARGET ceres)
     target_link_libraries(${LIBRARY_NAME} PUBLIC ceres)
@@ -72,6 +74,7 @@ else()
 endif()
 
 target_include_directories(${LIBRARY_NAME} PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/interface>
     $<INSTALL_INTERFACE:include/>
 )
 
