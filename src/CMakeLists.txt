@@ -37,6 +37,8 @@ elseif(IS_GNU OR IS_CLANG)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -Wall")
 endif()
 
+option(BUILD_SHARED_LIBS "Build shared libraries" ON) # default use dynamic
+
 set(LIBRARY_NAME pnpsolver)
 
 include_directories(${PROJECT_SOURCE_DIR}/src)
@@ -51,7 +53,7 @@ aux_source_directory(optim optim_src)
 
 aux_source_directory(util util_src)
 
-add_library(${LIBRARY_NAME} SHARED
+add_library(${LIBRARY_NAME}
     ${base_src}
     ${interface_src}
     ${estimators_src}
@@ -59,7 +61,6 @@ add_library(${LIBRARY_NAME} SHARED
     ${util_src})
 set_target_properties(${LIBRARY_NAME} PROPERTIES POSITION_INDEPENDENT_CODE ON)
 add_library(PnpSolver::pnpsolver ALIAS ${LIBRARY_NAME})
-
 
 if(TARGET ceres)
     target_link_libraries(${LIBRARY_NAME} PUBLIC ceres)
