@@ -37,12 +37,11 @@
 #include <thread>
 #include <unordered_set>
 
-#include "util/logging.h"
 #include "util/threading.h"
 
 namespace colmap {
 
-extern thread_local std::mt19937* PRNG;
+extern thread_local std::mt19937 *PRNG;
 
 static int kDefaultPRNGSeed = 0;
 
@@ -80,12 +79,12 @@ T RandomGaussian(const T mean, const T stddev);
 // @param num_to_shuffle   Optional parameter, specifying the number of first
 //                         N elements in the vector to shuffle.
 template <typename T>
-void Shuffle(const uint32_t num_to_shuffle, std::vector<T>* elems);
-
+void Shuffle(const uint32_t num_to_shuffle, std::vector<T> *elems);
 
 // Weighted Sampling
 template <typename T>
-std::vector<size_t> WeightedRandomSample(const std::vector<T> &prob, size_t size);
+std::vector<size_t> WeightedRandomSample(const std::vector<T> &prob,
+                                         size_t size);
 
 ////////////////////////////////////////////////////////////////////////////////
 // Implementation
@@ -93,49 +92,50 @@ std::vector<size_t> WeightedRandomSample(const std::vector<T> &prob, size_t size
 
 template <typename T>
 T RandomInteger(const T min, const T max) {
-  if (PRNG == nullptr) {
-    SetPRNGSeed();
-  }
+    if (PRNG == nullptr) {
+        SetPRNGSeed();
+    }
 
-  std::uniform_int_distribution<T> distribution(min, max);
+    std::uniform_int_distribution<T> distribution(min, max);
 
-  return distribution(*PRNG);
+    return distribution(*PRNG);
 }
 
 template <typename T>
 T RandomReal(const T min, const T max) {
-  if (PRNG == nullptr) {
-    SetPRNGSeed();
-  }
+    if (PRNG == nullptr) {
+        SetPRNGSeed();
+    }
 
-  std::uniform_real_distribution<T> distribution(min, max);
+    std::uniform_real_distribution<T> distribution(min, max);
 
-  return distribution(*PRNG);
+    return distribution(*PRNG);
 }
 
 template <typename T>
 T RandomGaussian(const T mean, const T stddev) {
-  if (PRNG == nullptr) {
-    SetPRNGSeed();
-  }
+    if (PRNG == nullptr) {
+        SetPRNGSeed();
+    }
 
-  std::normal_distribution<T> distribution(mean, stddev);
-  return distribution(*PRNG);
+    std::normal_distribution<T> distribution(mean, stddev);
+    return distribution(*PRNG);
 }
 
 template <typename T>
-void Shuffle(const uint32_t num_to_shuffle, std::vector<T>* elems) {
-  CHECK_LE(num_to_shuffle, elems->size());
-  const uint32_t last_idx = static_cast<uint32_t>(elems->size() - 1);
-  for (uint32_t i = 0; i < num_to_shuffle; ++i) {
-    const auto j = RandomInteger<uint32_t>(i, last_idx);
-    std::swap((*elems)[i], (*elems)[j]);
-  }
+void Shuffle(const uint32_t num_to_shuffle, std::vector<T> *elems) {
+    // CHECK_LE(num_to_shuffle, elems->size());
+    const uint32_t last_idx = static_cast<uint32_t>(elems->size() - 1);
+    for (uint32_t i = 0; i < num_to_shuffle; ++i) {
+        const auto j = RandomInteger<uint32_t>(i, last_idx);
+        std::swap((*elems)[i], (*elems)[j]);
+    }
 }
 
 template <typename T>
-std::vector<size_t> WeightedRandomSample(const std::vector<T> &prob, size_t size) {
-    CHECK_LE(size, prob.size());
+std::vector<size_t> WeightedRandomSample(const std::vector<T> &prob,
+                                         size_t size) {
+    // CHECK_LE(size, prob.size());
     std::discrete_distribution<int> distribution(prob.begin(), prob.end());
 
     if (PRNG == nullptr) {

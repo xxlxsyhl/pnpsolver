@@ -51,26 +51,26 @@ namespace colmap {
 ////////////////////////////////////////////////////////////////////////////////
 
 ceres::LossFunction* BundleAdjustmentOptions::CreateLossFunction() const {
-  ceres::LossFunction* loss_function = nullptr;
-  switch (loss_function_type) {
-    case LossFunctionType::TRIVIAL:
-      loss_function = new ceres::TrivialLoss();
-      break;
-    case LossFunctionType::SOFT_L1:
-      loss_function = new ceres::SoftLOneLoss(loss_function_scale);
-      break;
-    case LossFunctionType::CAUCHY:
-      loss_function = new ceres::CauchyLoss(loss_function_scale);
-      break;
-  }
-  CHECK_NOTNULL(loss_function);
-  return loss_function;
+    ceres::LossFunction* loss_function = nullptr;
+    switch (loss_function_type) {
+        case LossFunctionType::TRIVIAL:
+            loss_function = new ceres::TrivialLoss();
+            break;
+        case LossFunctionType::SOFT_L1:
+            loss_function = new ceres::SoftLOneLoss(loss_function_scale);
+            break;
+        case LossFunctionType::CAUCHY:
+            loss_function = new ceres::CauchyLoss(loss_function_scale);
+            break;
+    }
+    // CHECK_NOTNULL(loss_function);
+    return loss_function;
 }
 
-bool BundleAdjustmentOptions::Check() const {
-  CHECK_OPTION_GE(loss_function_scale, 0);
-  return true;
-}
+// bool BundleAdjustmentOptions::CHECK() const {
+//   // CHECK(loss_function_scale > 0);
+//   return true;
+// }
 
 ////////////////////////////////////////////////////////////////////////////////
 // BundleAdjustmentConfig
@@ -81,27 +81,27 @@ BundleAdjustmentConfig::BundleAdjustmentConfig() {}
 size_t BundleAdjustmentConfig::NumImages() const { return image_ids_.size(); }
 
 size_t BundleAdjustmentConfig::NumPoints() const {
-  return variable_point3D_ids_.size() + constant_point3D_ids_.size();
+    return variable_point3D_ids_.size() + constant_point3D_ids_.size();
 }
 
 size_t BundleAdjustmentConfig::NumConstantCameras() const {
-  return constant_camera_ids_.size();
+    return constant_camera_ids_.size();
 }
 
 size_t BundleAdjustmentConfig::NumConstantPoses() const {
-  return constant_poses_.size();
+    return constant_poses_.size();
 }
 
 size_t BundleAdjustmentConfig::NumConstantTvecs() const {
-  return constant_tvecs_.size();
+    return constant_tvecs_.size();
 }
 
 size_t BundleAdjustmentConfig::NumVariablePoints() const {
-  return variable_point3D_ids_.size();
+    return variable_point3D_ids_.size();
 }
 
 size_t BundleAdjustmentConfig::NumConstantPoints() const {
-  return constant_point3D_ids_.size();
+    return constant_point3D_ids_.size();
 }
 
 // size_t BundleAdjustmentConfig::NumResiduals(
@@ -116,7 +116,8 @@ size_t BundleAdjustmentConfig::NumConstantPoints() const {
 //   // already added as part of the images above.
 //
 //   auto NumObservationsForPoint = [this,
-//                                   &reconstruction](const point3D_t point3D_id) {
+//                                   &reconstruction](const point3D_t
+//                                   point3D_id) {
 //     size_t num_observations_for_point = 0;
 //     const auto& point3D = reconstruction.Point3D(point3D_id);
 //     for (const auto& track_el : point3D.Track().Elements()) {
@@ -138,167 +139,169 @@ size_t BundleAdjustmentConfig::NumConstantPoints() const {
 // }
 
 void BundleAdjustmentConfig::AddImage(const image_t image_id) {
-  image_ids_.insert(image_id);
+    image_ids_.insert(image_id);
 }
 
 bool BundleAdjustmentConfig::HasImage(const image_t image_id) const {
-  return image_ids_.find(image_id) != image_ids_.end();
+    return image_ids_.find(image_id) != image_ids_.end();
 }
 
 void BundleAdjustmentConfig::RemoveImage(const image_t image_id) {
-  image_ids_.erase(image_id);
+    image_ids_.erase(image_id);
 }
 
 void BundleAdjustmentConfig::SetConstantCamera(const camera_t camera_id) {
-  constant_camera_ids_.insert(camera_id);
+    constant_camera_ids_.insert(camera_id);
 }
 
 void BundleAdjustmentConfig::SetVariableCamera(const camera_t camera_id) {
-  constant_camera_ids_.erase(camera_id);
+    constant_camera_ids_.erase(camera_id);
 }
 
 bool BundleAdjustmentConfig::IsConstantCamera(const camera_t camera_id) const {
-  return constant_camera_ids_.find(camera_id) != constant_camera_ids_.end();
+    return constant_camera_ids_.find(camera_id) != constant_camera_ids_.end();
 }
 
 void BundleAdjustmentConfig::SetConstantPose(const image_t image_id) {
-  CHECK(HasImage(image_id));
-  CHECK(!HasConstantTvec(image_id));
-  constant_poses_.insert(image_id);
+    // CHECK(HasImage(image_id));
+    // CHECK(!HasConstantTvec(image_id));
+    constant_poses_.insert(image_id);
 }
 
 void BundleAdjustmentConfig::SetVariablePose(const image_t image_id) {
-  constant_poses_.erase(image_id);
+    constant_poses_.erase(image_id);
 }
 
 bool BundleAdjustmentConfig::HasConstantPose(const image_t image_id) const {
-  return constant_poses_.find(image_id) != constant_poses_.end();
+    return constant_poses_.find(image_id) != constant_poses_.end();
 }
 
 void BundleAdjustmentConfig::SetConstantTvec(const image_t image_id,
                                              const std::vector<int>& idxs) {
-  CHECK_GT(idxs.size(), 0);
-  CHECK_LE(idxs.size(), 3);
-  CHECK(HasImage(image_id));
-  CHECK(!HasConstantPose(image_id));
-  CHECK(!VectorContainsDuplicateValues(idxs))
-      << "Tvec indices must not contain duplicates";
-  constant_tvecs_.emplace(image_id, idxs);
+    // CHECK_GT(idxs.size(), 0);
+    // CHECK_LE(idxs.size(), 3);
+    // CHECK(HasImage(image_id));
+    // CHECK(!HasConstantPose(image_id));
+    // CHECK(!VectorContainsDuplicateValues(idxs))
+    // << "Tvec indices must not contain duplicates";
+    constant_tvecs_.emplace(image_id, idxs);
 }
 
 void BundleAdjustmentConfig::RemoveConstantTvec(const image_t image_id) {
-  constant_tvecs_.erase(image_id);
+    constant_tvecs_.erase(image_id);
 }
 
 bool BundleAdjustmentConfig::HasConstantTvec(const image_t image_id) const {
-  return constant_tvecs_.find(image_id) != constant_tvecs_.end();
+    return constant_tvecs_.find(image_id) != constant_tvecs_.end();
 }
 
 const std::unordered_set<image_t>& BundleAdjustmentConfig::Images() const {
-  return image_ids_;
+    return image_ids_;
 }
 
 const std::unordered_set<point3D_t>& BundleAdjustmentConfig::VariablePoints()
     const {
-  return variable_point3D_ids_;
+    return variable_point3D_ids_;
 }
 
 const std::unordered_set<point3D_t>& BundleAdjustmentConfig::ConstantPoints()
     const {
-  return constant_point3D_ids_;
+    return constant_point3D_ids_;
 }
 
 const std::vector<int>& BundleAdjustmentConfig::ConstantTvec(
     const image_t image_id) const {
-  return constant_tvecs_.at(image_id);
+    return constant_tvecs_.at(image_id);
 }
 
 void BundleAdjustmentConfig::AddVariablePoint(const point3D_t point3D_id) {
-  CHECK(!HasConstantPoint(point3D_id));
-  variable_point3D_ids_.insert(point3D_id);
+    // CHECK(!HasConstantPoint(point3D_id));
+    variable_point3D_ids_.insert(point3D_id);
 }
 
 void BundleAdjustmentConfig::AddConstantPoint(const point3D_t point3D_id) {
-  CHECK(!HasVariablePoint(point3D_id));
-  constant_point3D_ids_.insert(point3D_id);
+    // CHECK(!HasVariablePoint(point3D_id));
+    constant_point3D_ids_.insert(point3D_id);
 }
 
 bool BundleAdjustmentConfig::HasPoint(const point3D_t point3D_id) const {
-  return HasVariablePoint(point3D_id) || HasConstantPoint(point3D_id);
+    return HasVariablePoint(point3D_id) || HasConstantPoint(point3D_id);
 }
 
 bool BundleAdjustmentConfig::HasVariablePoint(
     const point3D_t point3D_id) const {
-  return variable_point3D_ids_.find(point3D_id) != variable_point3D_ids_.end();
+    return variable_point3D_ids_.find(point3D_id) !=
+           variable_point3D_ids_.end();
 }
 
 bool BundleAdjustmentConfig::HasConstantPoint(
     const point3D_t point3D_id) const {
-  return constant_point3D_ids_.find(point3D_id) != constant_point3D_ids_.end();
+    return constant_point3D_ids_.find(point3D_id) !=
+           constant_point3D_ids_.end();
 }
 
 void BundleAdjustmentConfig::RemoveVariablePoint(const point3D_t point3D_id) {
-  variable_point3D_ids_.erase(point3D_id);
+    variable_point3D_ids_.erase(point3D_id);
 }
 
 void BundleAdjustmentConfig::RemoveConstantPoint(const point3D_t point3D_id) {
-  constant_point3D_ids_.erase(point3D_id);
+    constant_point3D_ids_.erase(point3D_id);
 }
 
 void PrintSolverSummary(const ceres::Solver::Summary& summary) {
-  std::cout << std::right << std::setw(16) << "Residuals : ";
-  std::cout << std::left << summary.num_residuals_reduced << std::endl;
+    std::cout << std::right << std::setw(16) << "Residuals : ";
+    std::cout << std::left << summary.num_residuals_reduced << std::endl;
 
-  std::cout << std::right << std::setw(16) << "Parameters : ";
-  std::cout << std::left << summary.num_effective_parameters_reduced
-            << std::endl;
+    std::cout << std::right << std::setw(16) << "Parameters : ";
+    std::cout << std::left << summary.num_effective_parameters_reduced
+              << std::endl;
 
-  std::cout << std::right << std::setw(16) << "Iterations : ";
-  std::cout << std::left
-            << summary.num_successful_steps + summary.num_unsuccessful_steps
-            << std::endl;
+    std::cout << std::right << std::setw(16) << "Iterations : ";
+    std::cout << std::left
+              << summary.num_successful_steps + summary.num_unsuccessful_steps
+              << std::endl;
 
-  std::cout << std::right << std::setw(16) << "Time : ";
-  std::cout << std::left << summary.total_time_in_seconds << " [s]"
-            << std::endl;
+    std::cout << std::right << std::setw(16) << "Time : ";
+    std::cout << std::left << summary.total_time_in_seconds << " [s]"
+              << std::endl;
 
-  std::cout << std::right << std::setw(16) << "Initial cost : ";
-  std::cout << std::right << std::setprecision(6)
-            << std::sqrt(summary.initial_cost / summary.num_residuals_reduced)
-            << " [px]" << std::endl;
+    std::cout << std::right << std::setw(16) << "Initial cost : ";
+    std::cout << std::right << std::setprecision(6)
+              << std::sqrt(summary.initial_cost / summary.num_residuals_reduced)
+              << " [px]" << std::endl;
 
-  std::cout << std::right << std::setw(16) << "Final cost : ";
-  std::cout << std::right << std::setprecision(6)
-            << std::sqrt(summary.final_cost / summary.num_residuals_reduced)
-            << " [px]" << std::endl;
+    std::cout << std::right << std::setw(16) << "Final cost : ";
+    std::cout << std::right << std::setprecision(6)
+              << std::sqrt(summary.final_cost / summary.num_residuals_reduced)
+              << " [px]" << std::endl;
 
-  std::cout << std::right << std::setw(16) << "Termination : ";
+    std::cout << std::right << std::setw(16) << "Termination : ";
 
-  std::string termination = "";
+    std::string termination = "";
 
-  switch (summary.termination_type) {
-    case ceres::CONVERGENCE:
-      termination = "Convergence";
-      break;
-    case ceres::NO_CONVERGENCE:
-      termination = "No convergence";
-      break;
-    case ceres::FAILURE:
-      termination = "Failure";
-      break;
-    case ceres::USER_SUCCESS:
-      termination = "User success";
-      break;
-    case ceres::USER_FAILURE:
-      termination = "User failure";
-      break;
-    default:
-      termination = "Unknown";
-      break;
-  }
+    switch (summary.termination_type) {
+        case ceres::CONVERGENCE:
+            termination = "Convergence";
+            break;
+        case ceres::NO_CONVERGENCE:
+            termination = "No convergence";
+            break;
+        case ceres::FAILURE:
+            termination = "Failure";
+            break;
+        case ceres::USER_SUCCESS:
+            termination = "User success";
+            break;
+        case ceres::USER_FAILURE:
+            termination = "User failure";
+            break;
+        default:
+            termination = "Unknown";
+            break;
+    }
 
-  std::cout << std::right << termination << std::endl;
-  std::cout << std::endl;
+    std::cout << std::right << termination << std::endl;
+    std::cout << std::endl;
 }
 
 }  // namespace colmap
